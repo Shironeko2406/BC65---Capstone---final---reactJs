@@ -1,12 +1,97 @@
-const TOKEN_AUTHOR = "accessToken";
-const USER_LOGIN = "userLogin";
-const HOST_DOMAIN = "https://apistore.cybersoft.edu.vn";
+import axios, {
+  AxiosError,
+  AxiosInstance,
+  AxiosResponse,
+  InternalAxiosRequestConfig,
+} from "axios";
+
+export const navigateTo = (path: string) => {
+  window.location.href = path;
+};
+const TOKEN_AUTHOR: string = "accessToken";
+const USER_LOGIN: string = "userLogin";
+const HOST_DOMAIN: string = "https://jiranew.cybersoft.edu.vn";
 //Token của Hiếu
 // const TOKEN_CYBERSOFT =
 //   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0ZW5Mb3AiOiJCb290Y2FtcCA2NSIsIkhldEhhblN0cmluZyI6IjI1LzExLzIwMjQiLCJIZXRIYW5UaW1lIjoiMTczMjQ5MjgwMDAwMCIsIm5iZiI6MTcwMjMxNDAwMCwiZXhwIjoxNzMyNjQwNDAwfQ._Cum2zMqV8nsbUfpCOe0ILWE_GvP8V8FQnmOR8PRB44";
 
 //Token của Trí
-const TOKEN_CYBERSOFT = "YOUR_TOKEN_KEY"
+const TOKEN_CYBERSOFT: string =
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0ZW5Mb3AiOiJCb290Y2FtcCA2NSIsIkhldEhhblN0cmluZyI6IjI1LzExLzIwMjQiLCJIZXRIYW5UaW1lIjoiMTczMjQ5MjgwMDAwMCIsIm5iZiI6MTcwMjMxNDAwMCwiZXhwIjoxNzMyNjQwNDAwfQ._Cum2zMqV8nsbUfpCOe0ILWE_GvP8V8FQnmOR8PRB44";
+
+// Cấu hình interceptors
+const httpClient: AxiosInstance = axios.create({
+  baseURL: HOST_DOMAIN,
+  timeout: 30000,
+});
+
+httpClient.interceptors.request.use(
+  (req: InternalAxiosRequestConfig<any>) => {
+    const accessToken = localStorage.getItem(TOKEN_AUTHOR);
+    if (req.headers) {
+      req.headers.set("Authorization", accessToken ? `${accessToken}` : "");
+      req.headers.set("tokenCybesoft", TOKEN_CYBERSOFT);
+    }
+    return req;
+  },
+  (err: AxiosError) => {
+    return Promise.reject(err);
+  }
+);
+
+httpClient.interceptors.response.use(
+  (response: AxiosResponse<any>) => {
+    // Xử lý response thành công
+    return response;
+  },
+  (error: AxiosError) => {
+    // Xử lý lỗi response
+    if (error.response) {
+      // Server đã trả về một response nhưng với mã trạng thái lỗi
+      switch (error.response.status) {
+        case 401:
+          // Xử lý lỗi 401 Unauthorized, ví dụ: chuyển hướng đến trang đăng nhập
+          console.error(
+            "Unauthorized access - perhaps the user is not logged in or token expired."
+          );
+
+          navigateTo("/login");
+
+          break;
+        case 403:
+          // Xử lý lỗi 403 Forbidden
+          console.error(
+            "Forbidden - you don't have permission to access this resource."
+          );
+
+          navigateTo("/login");
+
+          break;
+        case 404:
+          // Xử lý lỗi 404 Not Found
+          console.error("Resource not found.");
+          break;
+        case 500:
+          // Xử lý lỗi 500 Internal Server Error
+          console.error("Internal server error.");
+          break;
+        default:
+          // Xử lý các mã lỗi khác
+          console.error(
+            `Error ${error.response.status}: ${error.response.statusText}`
+          );
+      }
+    } else if (error.request) {
+      // Request đã được gửi nhưng không nhận được phản hồi từ server
+      console.error("No response received from server.");
+    } else {
+      // Một số lỗi khác xảy ra trong quá trình thiết lập request
+      console.error("Error setting up request: ", error.message);
+    }
+
+    return Promise.reject(error);
+  }
+);
 
 // Cookie and local storage interaction functions
 
@@ -74,4 +159,5 @@ export {
   USER_LOGIN,
   HOST_DOMAIN,
   TOKEN_CYBERSOFT,
+  httpClient,
 };
