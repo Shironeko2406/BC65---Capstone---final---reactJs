@@ -56,6 +56,8 @@ const TemplateUI = (props: Props) => {
     switch (pathname) {
       case "/home":
         return "Project Management";
+      case "/home/createProject":
+        return "Create Project";
       // thêm các case
       default:
         return "Dashboard";

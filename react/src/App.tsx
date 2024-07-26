@@ -6,6 +6,7 @@ import Login from "./Pages/Login";
 import Register from "./Pages/Register";
 import TemplateUI from "./Pages/TempUI/TemplateUI";
 import ProjectManagement from "./Pages/ProjectManagement";
+import CreateProject from "./Pages/CreateProject";
 function App() {
   return (
     <>
@@ -15,6 +16,7 @@ function App() {
             <Route path="" element={<Login />}></Route>
             <Route path="home" element={<TemplateUI></TemplateUI>}>
               <Route path="" element={<ProjectManagement></ProjectManagement>}></Route>
+              <Route path="createProject" element={<CreateProject></CreateProject>}></Route>
             </Route>
             <Route path="register" element={<Register></Register>}></Route>
           </Routes>
