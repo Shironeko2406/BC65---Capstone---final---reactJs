@@ -1,7 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { message } from "antd";
 import {
-  HOST_DOMAIN,
   TOKEN_AUTHOR,
   TOKEN_CYBERSOFT,
   USER_LOGIN,
@@ -20,25 +19,29 @@ export interface UserLoggedType {
 }
 
 export interface UserInfo {
+  userId: number;
   email: string;
   passWord: string;
   name: string;
   phoneNumber: string;
 }
 
-interface UsersState {
+export interface UsersState {
   userLogin: UserLoggedType | null;
   userInfo: UserInfo | null;
+  userList: UserInfo[];
 }
 
 const initialState: UsersState = {
   userLogin: getDataJSONStorage(USER_LOGIN),
   userInfo: {
+    userId: 0, // Thêm giá trị khởi tạo cho id
     email: "",
     passWord: "",
     name: "",
     phoneNumber: "",
   },
+  userList: [],
 };
 
 const userReducer = createSlice({
@@ -54,10 +57,24 @@ const userReducer = createSlice({
     logoutAction: (state) => {
       state.userLogin = null;
     },
+    setUserList: (state, action: PayloadAction<UserInfo[]>) => {
+      state.userList = action.payload;
+    },
+    removeUserFromList: (state, action: PayloadAction<number>) => {
+      state.userList = state.userList.filter(
+        (user) => user.userId !== action.payload
+      );
+    },
   },
 });
 
-export const { loginAction, signupAction, logoutAction } = userReducer.actions;
+export const {
+  loginAction,
+  signupAction,
+  logoutAction,
+  setUserList,
+  removeUserFromList,
+} = userReducer.actions;
 
 export default userReducer.reducer;
 
@@ -76,7 +93,7 @@ export const loginActionApi = (email: string, passWord: string) => {
         },
         {
           headers: {
-            TokenCybersoft: TOKEN_CYBERSOFT, // Thay thế 'your_token_here' bằng giá trị thực tế của TokenCybersoft
+            TokenCybersoft: TOKEN_CYBERSOFT,
           },
         }
       );
@@ -102,13 +119,13 @@ export const loginActionApi = (email: string, passWord: string) => {
 };
 
 //----------------- Đăng kí-------------------
-export const signupActionApi = (signupInfo: UserInfo) => {
-  return async (dispatch: any) => {
+export const signupActionApi = (signupInfo: Omit<UserInfo, "userId">) => {
+  return async (dispatch: DispatchType) => {
     try {
       console.log(signupInfo);
       const res = await httpClient.post("/api/Users/signup", signupInfo, {
         headers: {
-          TokenCybersoft: TOKEN_CYBERSOFT, // Thay thế 'your_token_here' bằng giá trị thực tế của TokenCybersoft
+          TokenCybersoft: TOKEN_CYBERSOFT,
         },
       });
       message.success("Sign Up Success!");
@@ -117,13 +134,92 @@ export const signupActionApi = (signupInfo: UserInfo) => {
       dispatch(signup);
     } catch (error: any) {
       if (error.response) {
-        // API đã trả về phản hồi, ghi lại chi tiết lỗi
         const errorMessage = error.response.data?.message || "Unknown error";
-        message.error("Login failed: " + errorMessage);
+        message.error("Sign Up failed: " + errorMessage);
         console.error("Error details:", error.response.data);
       } else {
-        // Không nhận được phản hồi từ API
-        message.error("Login failed: " + error.message);
+        message.error("Sign Up failed: " + error.message);
+        console.error("Error details:", error);
+      }
+    }
+  };
+};
+
+//----------------- Lấy danh sách người dùng-------------------
+export const getUserListApi = () => {
+  return async (dispatch: DispatchType) => {
+    try {
+      const token = getDataTextStorage(TOKEN_AUTHOR);
+      console.log("token", token);
+      console.log("token cybersoft", TOKEN_CYBERSOFT);
+      const res = await httpClient.get("/api/Users/getUser", {
+        headers: {
+          Authorization: token,
+          TokenCybersoft: TOKEN_CYBERSOFT,
+        },
+      });
+      dispatch(setUserList(res.data.content));
+    } catch (error: any) {
+      if (error.response) {
+        const errorMessage = error.response.data?.message || "Unknown error";
+        message.error("Failed to fetch user list: " + errorMessage);
+        console.error("Error details:", error.response.data);
+      } else {
+        message.error("Failed to fetch user list: " + error.message);
+        console.error("Error details:", error);
+      }
+    }
+  };
+};
+
+//----------- Xóa người dùng
+export const deleteUserApi = (userId: number) => {
+  return async (dispatch: DispatchType) => {
+    try {
+      const token = getDataTextStorage(TOKEN_AUTHOR);
+      await httpClient.delete(`/api/Users/deleteUser?id=${userId}`, {
+        headers: {
+          Authorization: token,
+          TokenCybersoft: TOKEN_CYBERSOFT,
+        },
+      });
+      dispatch(removeUserFromList(userId));
+      message.success("Xóa người dùng thành công");
+    } catch (error: any) {
+      if (error.response) {
+        const errorMessage = error.response.data?.message || "Unknown error";
+        message.error("Failed to delete user: " + errorMessage);
+        console.error("Error details:", error.response.data);
+      } else {
+        message.error("Failed to delete user: " + error.message);
+        console.error("Error details:", error);
+      }
+    }
+  };
+};
+
+export const deleteMultipleUsersApi = (userIds: number[]) => {
+  return async (dispatch: DispatchType) => {
+    const token = getDataTextStorage(TOKEN_AUTHOR);
+    try {
+      const promises = userIds.map((userId) =>
+        httpClient.delete(`/api/Users/deleteUser?id=${userId}`, {
+          headers: {
+            Authorization: token,
+            TokenCybersoft: TOKEN_CYBERSOFT,
+          },
+        })
+      );
+      await Promise.all(promises);
+      userIds.forEach((userId) => dispatch(removeUserFromList(userId)));
+      message.success("Xóa người dùng đã chọn thành công");
+    } catch (error: any) {
+      if (error.response) {
+        const errorMessage = error.response.data?.message || "Unknown error";
+        message.error("Failed to delete users: " + errorMessage);
+        console.error("Error details:", error.response.data);
+      } else {
+        message.error("Failed to delete users: " + error.message);
         console.error("Error details:", error);
       }
     }
