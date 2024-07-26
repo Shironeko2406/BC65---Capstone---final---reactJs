@@ -29,7 +29,10 @@ httpClient.interceptors.request.use(
   (req: InternalAxiosRequestConfig<any>) => {
     const accessToken = localStorage.getItem(TOKEN_AUTHOR);
     if (req.headers) {
-      req.headers.set("Authorization", accessToken ? `${accessToken}` : "");
+      req.headers.set(
+        "Authorization",
+        accessToken ? `Bearer ${accessToken}` : ""
+      );
       req.headers.set("tokenCybesoft", TOKEN_CYBERSOFT);
     }
     return req;
@@ -55,7 +58,7 @@ httpClient.interceptors.response.use(
             "Unauthorized access - perhaps the user is not logged in or token expired."
           );
 
-          navigateTo("/login");
+          // navigateTo("/login");
 
           break;
         case 403:
@@ -64,7 +67,7 @@ httpClient.interceptors.response.use(
             "Forbidden - you don't have permission to access this resource."
           );
 
-          navigateTo("/login");
+          // navigateTo("/login");
 
           break;
         case 404:
