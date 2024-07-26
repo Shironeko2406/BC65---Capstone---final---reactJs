@@ -13,6 +13,7 @@ import {
   setDataTextStorage,
 } from "../../Util/UtilFunction";
 import { DispatchType } from "../store";
+import axios from "axios";
 
 export interface UserLoggedType {
   email: string;
@@ -20,25 +21,29 @@ export interface UserLoggedType {
 }
 
 export interface UserInfo {
+  userId: number;
   email: string;
   passWord: string;
   name: string;
   phoneNumber: string;
 }
 
-interface UsersState {
+export interface UsersState {
   userLogin: UserLoggedType | null;
   userInfo: UserInfo | null;
+  userList: UserInfo[];
 }
 
 const initialState: UsersState = {
   userLogin: getDataJSONStorage(USER_LOGIN),
   userInfo: {
+    userId: 0, // Thêm giá trị khởi tạo cho id
     email: "",
     passWord: "",
     name: "",
     phoneNumber: "",
   },
+  userList: [],
 };
 
 const userReducer = createSlice({
@@ -54,10 +59,14 @@ const userReducer = createSlice({
     logoutAction: (state) => {
       state.userLogin = null;
     },
+    setUserList: (state, action: PayloadAction<UserInfo[]>) => {
+      state.userList = action.payload;
+    },
   },
 });
 
-export const { loginAction, signupAction, logoutAction } = userReducer.actions;
+export const { loginAction, signupAction, logoutAction, setUserList } =
+  userReducer.actions;
 
 export default userReducer.reducer;
 
@@ -76,7 +85,7 @@ export const loginActionApi = (email: string, passWord: string) => {
         },
         {
           headers: {
-            TokenCybersoft: TOKEN_CYBERSOFT, // Thay thế 'your_token_here' bằng giá trị thực tế của TokenCybersoft
+            TokenCybersoft: TOKEN_CYBERSOFT,
           },
         }
       );
@@ -102,13 +111,13 @@ export const loginActionApi = (email: string, passWord: string) => {
 };
 
 //----------------- Đăng kí-------------------
-export const signupActionApi = (signupInfo: UserInfo) => {
-  return async (dispatch: any) => {
+export const signupActionApi = (signupInfo: Omit<UserInfo, "userId">) => {
+  return async (dispatch: DispatchType) => {
     try {
       console.log(signupInfo);
       const res = await httpClient.post("/api/Users/signup", signupInfo, {
         headers: {
-          TokenCybersoft: TOKEN_CYBERSOFT, // Thay thế 'your_token_here' bằng giá trị thực tế của TokenCybersoft
+          TokenCybersoft: TOKEN_CYBERSOFT,
         },
       });
       message.success("Sign Up Success!");
@@ -117,13 +126,38 @@ export const signupActionApi = (signupInfo: UserInfo) => {
       dispatch(signup);
     } catch (error: any) {
       if (error.response) {
-        // API đã trả về phản hồi, ghi lại chi tiết lỗi
         const errorMessage = error.response.data?.message || "Unknown error";
-        message.error("Login failed: " + errorMessage);
+        message.error("Sign Up failed: " + errorMessage);
         console.error("Error details:", error.response.data);
       } else {
-        // Không nhận được phản hồi từ API
-        message.error("Login failed: " + error.message);
+        message.error("Sign Up failed: " + error.message);
+        console.error("Error details:", error);
+      }
+    }
+  };
+};
+
+//----------------- Lấy danh sách người dùng-------------------
+export const getUserListApi = () => {
+  return async (dispatch: DispatchType) => {
+    try {
+      const token = getDataTextStorage(TOKEN_AUTHOR);
+      console.log("token", token);
+      console.log("token cybersoft", TOKEN_CYBERSOFT);
+      const res = await httpClient.get("/api/Users/getUser", {
+        headers: {
+          Authorization: token,
+          TokenCybersoft: TOKEN_CYBERSOFT,
+        },
+      });
+      dispatch(setUserList(res.data.content));
+    } catch (error: any) {
+      if (error.response) {
+        const errorMessage = error.response.data?.message || "Unknown error";
+        message.error("Failed to fetch user list: " + errorMessage);
+        console.error("Error details:", error.response.data);
+      } else {
+        message.error("Failed to fetch user list: " + error.message);
         console.error("Error details:", error);
       }
     }

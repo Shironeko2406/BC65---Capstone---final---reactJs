@@ -6,6 +6,7 @@ import Login from "./Pages/Login";
 import Register from "./Pages/Register";
 import TemplateUI from "./Pages/TempUI/TemplateUI";
 import ProjectManagement from "./Pages/ProjectManagement";
+import UserManagement from "./Pages/UserManagement";
 function App() {
   return (
     <>
@@ -14,7 +15,14 @@ function App() {
           <Routes>
             <Route path="" element={<Login />}></Route>
             <Route path="home" element={<TemplateUI></TemplateUI>}>
-              <Route path="" element={<ProjectManagement></ProjectManagement>}></Route>
+              <Route
+                path=""
+                element={<ProjectManagement></ProjectManagement>}
+              ></Route>
+              <Route
+                path="user-list"
+                element={<UserManagement></UserManagement>}
+              ></Route>
             </Route>
             <Route path="register" element={<Register></Register>}></Route>
           </Routes>
