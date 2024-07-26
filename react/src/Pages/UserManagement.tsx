@@ -7,7 +7,12 @@ import {
   DeleteOutlined,
 } from "@ant-design/icons";
 import { useDispatch, useSelector } from "react-redux";
-import { getUserListApi, UserInfo } from "../Redux/Reducers/userReducer";
+import {
+  deleteMultipleUsersApi,
+  deleteUserApi,
+  getUserListApi,
+  UserInfo,
+} from "../Redux/Reducers/userReducer";
 import { DispatchType, RootState } from "../Redux/store";
 import "antd/dist/reset.css";
 
@@ -16,6 +21,7 @@ const UserManagement: React.FC = () => {
   const { userList } = useSelector((state: RootState) => state.userReducer);
   const [searchText, setSearchText] = useState("");
   const [filteredUsers, setFilteredUsers] = useState<UserInfo[]>([]);
+  const [selectedRowKeys, setSelectedRowKeys] = useState<number[]>([]);
 
   useEffect(() => {
     dispatch(getUserListApi());
@@ -30,6 +36,7 @@ const UserManagement: React.FC = () => {
     setSearchText(value);
     const filteredData = userList.filter(
       (user) =>
+        user.userId.toString().includes(value) ||
         user.name.toLowerCase().includes(value.toLowerCase()) ||
         user.email.toLowerCase().includes(value.toLowerCase()) ||
         user.phoneNumber.includes(value)
@@ -38,9 +45,12 @@ const UserManagement: React.FC = () => {
   };
 
   const handleDelete = (id: number) => {
-    const newData = filteredUsers.filter((user) => user.userId !== id);
-    setFilteredUsers(newData);
-    message.success("Xóa người dùng thành công");
+    dispatch(deleteUserApi(id));
+  };
+
+  const handleDeleteSelected = () => {
+    dispatch(deleteMultipleUsersApi(selectedRowKeys));
+    setSelectedRowKeys([]); // Clear selected rows
   };
 
   const columns: ColumnsType<UserInfo> = [
@@ -84,6 +94,13 @@ const UserManagement: React.FC = () => {
     },
   ];
 
+  const rowSelection = {
+    selectedRowKeys,
+    onChange: (selectedRowKeys: React.Key[]) => {
+      setSelectedRowKeys(selectedRowKeys as number[]);
+    },
+  };
+
   return (
     <div>
       <Input
@@ -93,8 +110,22 @@ const UserManagement: React.FC = () => {
         style={{ marginBottom: 16, width: 300 }}
         prefix={<SearchOutlined />}
       />
+      <div style={{ marginBottom: 16 }}>
+        {selectedRowKeys.length > 1 && (
+          <Popconfirm
+            title="Bạn có chắc muốn xóa các người dùng đã chọn không?"
+            onConfirm={handleDeleteSelected}
+            okText="Có"
+            cancelText="Không"
+          >
+            <Button type="primary" danger>
+              Xóa người dùng đã chọn
+            </Button>
+          </Popconfirm>
+        )}
+      </div>
       <Table
-        rowSelection={{ type: "checkbox" }}
+        rowSelection={rowSelection}
         columns={columns}
         dataSource={filteredUsers}
         rowKey="userId"
