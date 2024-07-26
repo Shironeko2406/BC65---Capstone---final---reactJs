@@ -11,7 +11,7 @@ import { getUserListApi, UserInfo } from "../Redux/Reducers/userReducer";
 import { DispatchType, RootState } from "../Redux/store";
 import "antd/dist/reset.css";
 
-const UserList: React.FC = () => {
+const UserManagement: React.FC = () => {
   const dispatch: DispatchType = useDispatch();
   const { userList } = useSelector((state: RootState) => state.userReducer);
   const [searchText, setSearchText] = useState("");
@@ -103,4 +103,4 @@ const UserList: React.FC = () => {
   );
 };
 
-export default UserList;
+export default UserManagement;
