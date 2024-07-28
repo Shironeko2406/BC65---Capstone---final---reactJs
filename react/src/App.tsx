@@ -8,6 +8,7 @@ import TemplateUI from "./Pages/TempUI/TemplateUI";
 import ProjectManagement from "./Pages/ProjectManagement";
 import CreateProject from "./Pages/CreateProject";
 import UserManagement from "./Pages/UserManagement";
+import EditProject from "./Pages/Modals/ProjectDrawer/EditProject";
 
 function App() {
   return (
@@ -18,15 +19,15 @@ function App() {
             <Route path="" element={<Login />}></Route>
             <Route path="home" element={<TemplateUI></TemplateUI>}>
               <Route
-                path=""
+                path="project"
                 element={<ProjectManagement></ProjectManagement>}
               ></Route>
               <Route
-                path="createProject"
+                path="create-project"
                 element={<CreateProject></CreateProject>}
               ></Route>
               <Route
-                path="user-list"
+                path=""
                 element={<UserManagement></UserManagement>}
               ></Route>
             </Route>
