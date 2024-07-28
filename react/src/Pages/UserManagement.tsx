@@ -10,22 +10,35 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   deleteMultipleUsersApi,
   deleteUserApi,
+  editUserApi,
   getUserListApi,
   UserInfo,
-} from "../Redux/Reducers/userReducer";
+} from "../Redux/Reducers/UserReducer";
 import { DispatchType, RootState } from "../Redux/store";
 import "antd/dist/reset.css";
+import UserDrawer from "./Modals/UserDrawer/UserDrawer";
+import { useNavigate } from "react-router-dom";
 
 const UserManagement: React.FC = () => {
   const dispatch: DispatchType = useDispatch();
-  const { userList } = useSelector((state: RootState) => state.userReducer);
+  const navigate = useNavigate();
+  const { userList, userLogin } = useSelector(
+    (state: RootState) => state.userReducer
+  );
   const [searchText, setSearchText] = useState("");
   const [filteredUsers, setFilteredUsers] = useState<UserInfo[]>([]);
   const [selectedRowKeys, setSelectedRowKeys] = useState<number[]>([]);
+  const [isDrawerVisible, setIsDrawerVisible] = useState(false);
+  const [currentUser, setCurrentUser] = useState<UserInfo | null>(null);
 
   useEffect(() => {
-    dispatch(getUserListApi());
-  }, [dispatch]);
+    if (!userLogin) {
+      message.warning("You need to log in to access this page!");
+      navigate("/");
+    } else {
+      dispatch(getUserListApi());
+    }
+  }, [dispatch, navigate, userLogin]);
 
   useEffect(() => {
     setFilteredUsers(userList);
@@ -53,6 +66,21 @@ const UserManagement: React.FC = () => {
     setSelectedRowKeys([]); // Clear selected rows
   };
 
+  const handleEdit = (user: UserInfo) => {
+    setCurrentUser(user);
+    setIsDrawerVisible(true);
+  };
+
+  const handleUpdate = async (values: UserInfo) => {
+    try {
+      await dispatch(editUserApi(values));
+      setIsDrawerVisible(false);
+      dispatch(getUserListApi()); // Fetch lại dữ liệu sau khi cập nhật thành công
+    } catch (error) {
+      console.error("Failed to update user:", error);
+    }
+  };
+
   const columns: ColumnsType<UserInfo> = [
     {
       title: "ID",
@@ -66,28 +94,33 @@ const UserManagement: React.FC = () => {
       key: "email",
     },
     {
-      title: "Tên",
+      title: "Name",
       dataIndex: "name",
       key: "name",
     },
     {
-      title: "Điện thoại",
+      title: "Phone Number",
       dataIndex: "phoneNumber",
       key: "phoneNumber",
     },
     {
-      title: "Hành động",
+      title: "Action",
       key: "action",
       render: (_, record) => (
         <Space size="middle">
-          <Button icon={<EditOutlined />} />
+          <Button
+            type="primary"
+            shape="circle"
+            icon={<EditOutlined />}
+            onClick={() => handleEdit(record)}
+          />
           <Popconfirm
-            title="Bạn có chắc muốn xóa người dùng này không?"
+            title="Are you want to delete this user?"
             onConfirm={() => handleDelete(record.userId)}
-            okText="Có"
-            cancelText="Không"
+            okText="Yes"
+            cancelText="No"
           >
-            <Button icon={<DeleteOutlined />} danger />
+            <Button shape="circle" icon={<DeleteOutlined />} danger />
           </Popconfirm>
         </Space>
       ),
@@ -104,7 +137,7 @@ const UserManagement: React.FC = () => {
   return (
     <div>
       <Input
-        placeholder="Tìm kiếm người dùng"
+        placeholder="Search...."
         value={searchText}
         onChange={handleSearch}
         style={{ marginBottom: 16, width: 300 }}
@@ -113,13 +146,13 @@ const UserManagement: React.FC = () => {
       <div style={{ marginBottom: 16 }}>
         {selectedRowKeys.length > 1 && (
           <Popconfirm
-            title="Bạn có chắc muốn xóa các người dùng đã chọn không?"
+            title="Are you sure you want to delete the selected users?"
             onConfirm={handleDeleteSelected}
-            okText="Có"
-            cancelText="Không"
+            okText="Yes"
+            cancelText="No"
           >
             <Button type="primary" danger>
-              Xóa người dùng đã chọn
+              Delete selected user
             </Button>
           </Popconfirm>
         )}
@@ -129,6 +162,12 @@ const UserManagement: React.FC = () => {
         columns={columns}
         dataSource={filteredUsers}
         rowKey="userId"
+      />
+      <UserDrawer
+        visible={isDrawerVisible}
+        onClose={() => setIsDrawerVisible(false)}
+        onSubmit={handleUpdate}
+        initialValues={currentUser}
       />
     </div>
   );
