@@ -17,7 +17,7 @@ import {
 } from "@ant-design/icons";
 import { NavLink, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import { signupActionApi } from "../Redux/Reducers/UserReducer";
+import { signupActionApi } from "../Redux/Reducers/UsersReducer";
 import { DispatchType } from "../Redux/store";
 
 const { useToken } = theme;

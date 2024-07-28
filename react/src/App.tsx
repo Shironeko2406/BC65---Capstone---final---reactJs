@@ -6,7 +6,9 @@ import Login from "./Pages/Login";
 import Register from "./Pages/Register";
 import TemplateUI from "./Pages/TempUI/TemplateUI";
 import ProjectManagement from "./Pages/ProjectManagement";
+import CreateProject from "./Pages/CreateProject";
 import UserManagement from "./Pages/UserManagement";
+
 function App() {
   return (
     <>
