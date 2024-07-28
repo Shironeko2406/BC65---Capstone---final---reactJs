@@ -3,6 +3,8 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { DispatchType } from "../store";
 import { httpClient, TOKEN_CYBERSOFT } from "../../Util/UtilFunction";
+import { FormCreateProject } from "../../Models/ProjectModalType";
+import { message } from "antd";
 
 // Định nghĩa kiểu cho member
 interface Member {
@@ -100,6 +102,22 @@ export const GetProjectAllActionAsync = () => {
       console.log(res.data.content);
       const actionAsync = setProjectList(res.data.content);
       dispatch(actionAsync);
+    } catch (error: any) {
+      console.log(error);
+    }
+  };
+};
+
+export const CreateProjectActionAsync = (projectData: FormCreateProject) => {
+  return async (dispatch: DispatchType) => {
+    try {
+      const res = await httpClient.post(
+        `/api/Project/createProjectAuthorize`,
+        projectData
+      );
+      console.log(res.data.content);
+      dispatch(GetProjectAllActionAsync());
+      message.success("Create success!");
     } catch (error: any) {
       console.log(error);
     }

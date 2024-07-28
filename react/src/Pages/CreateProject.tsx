@@ -1,12 +1,27 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Form, Input, Button, Select } from "antd";
 import { Editor } from "@tinymce/tinymce-react";
 import { FormCreateProject } from "../Models/ProjectModalType";
 import { string } from "yup";
+import { GetProjectCategoryActionAsync } from "../Redux/Reducers/ProjectCategoryReducer";
+import { DispatchType, RootState } from "../Redux/store";
+import { useDispatch, useSelector } from "react-redux";
+import { ProjectCategory } from "../Models/ProjectCategoryModalType";
+import { CreateProjectActionAsync } from "../Redux/Reducers/ProjectReducer";
 
 const { Option } = Select;
 
 const CreateProject = () => {
+  const dispatch: DispatchType = useDispatch();
+  const { projectCategory } = useSelector(
+    (state: RootState) => state.ProjectCategoryReducer
+  );
+  console.log(projectCategory);
+
+  useEffect(() => {
+    dispatch(GetProjectCategoryActionAsync());
+  }, []);
+
   const [form] = Form.useForm();
   const [description, setDescription] = useState("");
 
@@ -22,7 +37,8 @@ const CreateProject = () => {
       alias: "My Project",
     };
 
-    console.log(formCreate);
+    const actionAsyn = CreateProjectActionAsync(formCreate);
+    dispatch(actionAsyn);
   };
 
   return (
@@ -73,9 +89,11 @@ const CreateProject = () => {
         rules={[{ required: true, message: "Please select the project type!" }]}
       >
         <Select placeholder="Select a project type">
-          <Option value="web">Dự án web</Option>
-          <Option value="software">Dự án phần mềm</Option>
-          <Option value="mobile">Dự án di động</Option>
+          {projectCategory.map((category: ProjectCategory) => (
+            <Option key={category.id} value={category.id}>
+              {category.projectCategoryName}
+            </Option>
+          ))}
         </Select>
       </Form.Item>
 
