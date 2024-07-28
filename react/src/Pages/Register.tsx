@@ -17,8 +17,7 @@ import {
 } from "@ant-design/icons";
 import { NavLink, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import { signupActionApi } from "../Redux/Reducers/userReducer";
-import { FormInstance } from "antd/lib/form";
+import { signupActionApi } from "../Redux/Reducers/UserReducer";
 import { DispatchType } from "../Redux/store";
 
 const { useToken } = theme;
@@ -43,7 +42,7 @@ const Register: React.FC = () => {
       console.log("Received values of form: ", values);
       const signupActionThunk = signupActionApi(values);
       await dispatch(signupActionThunk);
-      navigate("/login");
+      navigate("/");
     } catch (error) {
       console.log(error);
     }

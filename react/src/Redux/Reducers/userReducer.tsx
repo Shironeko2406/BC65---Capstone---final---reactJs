@@ -35,7 +35,7 @@ export interface UsersState {
 const initialState: UsersState = {
   userLogin: getDataJSONStorage(USER_LOGIN),
   userInfo: {
-    userId: 0, // Thêm giá trị khởi tạo cho id
+    userId: 0,
     email: "",
     passWord: "",
     name: "",
@@ -65,6 +65,14 @@ const userReducer = createSlice({
         (user) => user.userId !== action.payload
       );
     },
+    updateUserInList: (state, action: PayloadAction<UserInfo>) => {
+      const index = state.userList.findIndex(
+        (user) => user.userId === action.payload.userId
+      );
+      if (index !== -1) {
+        state.userList[index] = action.payload;
+      }
+    },
   },
 });
 
@@ -74,6 +82,7 @@ export const {
   logoutAction,
   setUserList,
   removeUserFromList,
+  updateUserInList,
 } = userReducer.actions;
 
 export default userReducer.reducer;
@@ -184,7 +193,7 @@ export const deleteUserApi = (userId: number) => {
         },
       });
       dispatch(removeUserFromList(userId));
-      message.success("Xóa người dùng thành công");
+      message.success("User deletion successful!");
     } catch (error: any) {
       if (error.response) {
         const errorMessage = error.response.data?.message || "Unknown error";
@@ -212,7 +221,7 @@ export const deleteMultipleUsersApi = (userIds: number[]) => {
       );
       await Promise.all(promises);
       userIds.forEach((userId) => dispatch(removeUserFromList(userId)));
-      message.success("Xóa người dùng đã chọn thành công");
+      message.success("Successfully deleted the selected user!");
     } catch (error: any) {
       if (error.response) {
         const errorMessage = error.response.data?.message || "Unknown error";
@@ -220,6 +229,41 @@ export const deleteMultipleUsersApi = (userIds: number[]) => {
         console.error("Error details:", error.response.data);
       } else {
         message.error("Failed to delete users: " + error.message);
+        console.error("Error details:", error);
+      }
+    }
+  };
+};
+
+//-------- Edit User
+export const editUserApi = (user: UserInfo) => {
+  return async (dispatch: DispatchType) => {
+    try {
+      const res = await httpClient.put(
+        `/api/Users/editUser`,
+        {
+          id: user.userId,
+          passWord: user.passWord,
+          email: user.email,
+          name: user.name,
+          phoneNumber: user.phoneNumber,
+        },
+        {
+          headers: {
+            TokenCybersoft: TOKEN_CYBERSOFT,
+          },
+        }
+      );
+      console.log("userdata", res.data.content);
+      dispatch(updateUserInList(res.data.content));
+      message.success("User information updated successfully!");
+    } catch (error: any) {
+      if (error.response) {
+        const errorMessage = error.response.data?.message || "Unknown error";
+        message.error("Failed to edit user: " + errorMessage);
+        console.error("Error details:", error.response.data);
+      } else {
+        message.error("Failed to edit user: " + error.message);
         console.error("Error details:", error);
       }
     }

@@ -3,8 +3,7 @@ import { Button, Checkbox, Form, Grid, Input, theme, Typography } from "antd";
 import { useDispatch } from "react-redux";
 import { LockOutlined, MailOutlined } from "@ant-design/icons";
 import { NavLink, useNavigate } from "react-router-dom";
-import { loginActionApi } from "../Redux/Reducers/userReducer";
-import { FormInstance } from "antd/lib/form";
+import { loginActionApi } from "../Redux/Reducers/UserReducer";
 import { DispatchType } from "../Redux/store";
 
 const { useToken } = theme;
