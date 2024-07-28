@@ -123,3 +123,37 @@ export const CreateProjectActionAsync = (projectData: FormCreateProject) => {
     }
   };
 };
+
+export const UpdateProjectActionAsync = (
+  id: number,
+  dataUpdate: FormCreateProject
+) => {
+  return async (dispatch: DispatchType) => {
+    try {
+      const res = await httpClient.put(
+        `/api/Project/updateProject?projectId=${id}`,
+        dataUpdate
+      );
+      console.log(res.data.content);
+      dispatch(GetProjectAllActionAsync());
+      message.success("Update success!");
+    } catch (error: any) {
+      console.log(error);
+    }
+  };
+};
+
+export const DeleteProjectActionAsync = (id: number) => {
+  return async (dispatch: DispatchType) => {
+    try {
+      const res = await httpClient.delete(
+        `/api/Project/deleteProject?projectId=${id}`
+      );
+      console.log(res.data.content);
+      dispatch(GetProjectAllActionAsync());
+      message.success("Delete success!");
+    } catch (error: any) {
+      console.log(error);
+    }
+  };
+};

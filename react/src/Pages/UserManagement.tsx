@@ -48,7 +48,7 @@ const UserManagement: React.FC = () => {
     const value = e.target.value;
     setSearchText(value);
     const filteredData = userList.filter(
-      (user) =>
+      (user:UserInfo) =>
         user.userId.toString().includes(value) ||
         user.name.toLowerCase().includes(value.toLowerCase()) ||
         user.email.toLowerCase().includes(value.toLowerCase()) ||

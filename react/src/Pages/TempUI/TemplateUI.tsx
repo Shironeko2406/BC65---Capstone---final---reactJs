@@ -1,14 +1,18 @@
 import React, { useState } from "react";
 import {
   DesktopOutlined,
-  FileOutlined,
-  PieChartOutlined,
-  TeamOutlined,
+  FolderOutlined,
+  LogoutOutlined,
   UserOutlined,
 } from "@ant-design/icons";
 import type { MenuProps } from "antd";
 import { Breadcrumb, Layout, Menu, theme } from "antd";
-import { Outlet, useLocation } from "react-router-dom";
+import { Outlet, useLocation, useNavigate } from "react-router-dom";
+import {
+  removeDataTextStorage,
+  TOKEN_AUTHOR,
+  USER_LOGIN,
+} from "../../Util/UtilFunction";
 
 const { Header, Content, Footer, Sider } = Layout;
 
@@ -29,18 +33,12 @@ function getItem(
 }
 
 const items: MenuItem[] = [
-  getItem("Option 1", "1", <PieChartOutlined />),
-  getItem("Option 2", "2", <DesktopOutlined />),
-  getItem("User", "sub1", <UserOutlined />, [
-    getItem("Tom", "3"),
-    getItem("Bill", "4"),
-    getItem("Alex", "5"),
+  getItem("User", "/home", <UserOutlined />),
+  getItem("Project", "sub1", <FolderOutlined />, [
+    getItem("Project Management", "/home/project", <DesktopOutlined />),
+    getItem("Create Project", "/home/create-project", <DesktopOutlined />),
   ]),
-  getItem("Team", "sub2", <TeamOutlined />, [
-    getItem("Team 1", "6"),
-    getItem("Team 2", "8"),
-  ]),
-  getItem("Files", "9", <FileOutlined />),
+  getItem("Logout", "logout", <LogoutOutlined />),
 ];
 
 type Props = {};
@@ -51,16 +49,29 @@ const TemplateUI = (props: Props) => {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken();
   const location = useLocation();
+  const navigate = useNavigate();
 
   const getTitle = (pathname: string) => {
     switch (pathname) {
       case "/home":
-        return "Project Management";
-      case "/home/createProject":
+        return "User Management";
+      case "/home/create-project":
         return "Create Project";
+      case "/home/project":
+        return "Project Management";
       // thêm các case
       default:
         return "Dashboard";
+    }
+  };
+
+  const onMenuClick: MenuProps["onClick"] = (e) => {
+    if (e.key === "logout") {
+      removeDataTextStorage(USER_LOGIN);
+      removeDataTextStorage(TOKEN_AUTHOR);
+      navigate("/");
+    } else {
+      navigate(e.key);
     }
   };
 
@@ -70,6 +81,7 @@ const TemplateUI = (props: Props) => {
         collapsible
         collapsed={collapsed}
         onCollapse={(value) => setCollapsed(value)}
+        width={230}
       >
         <div
           className="logo-container"
@@ -79,9 +91,11 @@ const TemplateUI = (props: Props) => {
         </div>
         <Menu
           theme="dark"
-          defaultSelectedKeys={["1"]}
+          defaultSelectedKeys={[location.pathname]}
+          selectedKeys={[location.pathname]}
           mode="inline"
           items={items}
+          onClick={onMenuClick}
         />
       </Sider>
       <Layout>

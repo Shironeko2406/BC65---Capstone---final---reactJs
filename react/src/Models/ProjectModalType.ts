@@ -54,3 +54,9 @@ export interface Member {
     alias: string;
   }
   
+
+  export interface EditProjectProps {
+    visible: boolean;
+    onClose: () => void;
+    project: Project | null;
+  }
