@@ -1,6 +1,7 @@
 import { configureStore } from "@reduxjs/toolkit";
 import ProjectReducer from "./Reducers/ProjectReducer";
 import UsersReducer from "./Reducers/UsersReducer";
+import ProjectCategoryReducer from "./Reducers/ProjectCategoryReducer";
 
 
   
@@ -9,6 +10,7 @@ export const store:any = configureStore({
     number: (state: number = 1) => state,
     UsersReducer,
     ProjectReducer,
+    ProjectCategoryReducer,
   },
 });
 

@@ -22,6 +22,10 @@ function App() {
                 element={<ProjectManagement></ProjectManagement>}
               ></Route>
               <Route
+                path="createProject"
+                element={<CreateProject></CreateProject>}
+              ></Route>
+              <Route
                 path="user-list"
                 element={<UserManagement></UserManagement>}
               ></Route>
