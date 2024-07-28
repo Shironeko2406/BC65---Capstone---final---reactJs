@@ -13,7 +13,7 @@ import {
   editUserApi,
   getUserListApi,
   UserInfo,
-} from "../Redux/Reducers/UserReducer";
+} from "../Redux/Reducers/UsersReducer";
 import { DispatchType, RootState } from "../Redux/store";
 import "antd/dist/reset.css";
 import UserDrawer from "./Modals/UserDrawer/UserDrawer";
@@ -23,7 +23,7 @@ const UserManagement: React.FC = () => {
   const dispatch: DispatchType = useDispatch();
   const navigate = useNavigate();
   const { userList, userLogin } = useSelector(
-    (state: RootState) => state.userReducer
+    (state: RootState) => state.UsersReducer
   );
   const [searchText, setSearchText] = useState("");
   const [filteredUsers, setFilteredUsers] = useState<UserInfo[]>([]);
@@ -69,6 +69,7 @@ const UserManagement: React.FC = () => {
   const handleEdit = (user: UserInfo) => {
     setCurrentUser(user);
     setIsDrawerVisible(true);
+    console.log(currentUser)
   };
 
   const handleUpdate = async (values: UserInfo) => {

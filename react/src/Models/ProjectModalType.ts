@@ -47,3 +47,10 @@ export interface Member {
     creator: Creator;
   }
   
+  export interface FormCreateProject {
+    projectName: string;
+    description: string;
+    categoryId: number;
+    alias: string;
+  }
+  
