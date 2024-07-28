@@ -44,8 +44,8 @@ const initialState: UsersState = {
   userList: [],
 };
 
-const userReducer = createSlice({
-  name: "userReducer",
+const UsersReducer = createSlice({
+  name: "UsersReducer",
   initialState,
   reducers: {
     loginAction: (state: UsersState, action: PayloadAction<UserLoggedType>) => {
@@ -83,9 +83,9 @@ export const {
   setUserList,
   removeUserFromList,
   updateUserInList,
-} = userReducer.actions;
+} = UsersReducer.actions;
 
-export default userReducer.reducer;
+export default UsersReducer.reducer;
 
 // Action Thunks
 

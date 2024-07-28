@@ -17,8 +17,6 @@ function App() {
           <Routes>
             <Route path="" element={<Login />}></Route>
             <Route path="home" element={<TemplateUI></TemplateUI>}>
-              <Route path="" element={<ProjectManagement></ProjectManagement>}></Route>
-              <Route path="createProject" element={<CreateProject></CreateProject>}></Route>
               <Route
                 path=""
                 element={<ProjectManagement></ProjectManagement>}
