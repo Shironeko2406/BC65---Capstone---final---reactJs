@@ -5,16 +5,11 @@ import { LockOutlined, MailOutlined } from "@ant-design/icons";
 import { NavLink, useNavigate } from "react-router-dom";
 import { loginActionApi } from "../Redux/Reducers/UsersReducer";
 import { DispatchType } from "../Redux/store";
+import { LoginFormValues } from "../Models/UserModalType";
 
 const { useToken } = theme;
 const { useBreakpoint } = Grid;
 const { Text, Title } = Typography;
-
-interface LoginFormValues {
-  email: string;
-  passWord: string;
-  remember?: boolean;
-}
 
 const Login: React.FC = () => {
   const { token } = useToken();

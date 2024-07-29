@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { Form, Input, Button, Select } from "antd";
 import { Editor } from "@tinymce/tinymce-react";
 import { FormCreateProject } from "../Models/ProjectModalType";
-import { string } from "yup";
 import { GetProjectCategoryActionAsync } from "../Redux/Reducers/ProjectCategoryReducer";
 import { DispatchType, RootState } from "../Redux/store";
 import { useDispatch, useSelector } from "react-redux";
@@ -37,8 +36,8 @@ const CreateProject = () => {
       alias: "My Project",
     };
 
-    const actionAsyn = CreateProjectActionAsync(formCreate);
-    dispatch(actionAsyn);
+    const actionAsync = CreateProjectActionAsync(formCreate);
+    dispatch(actionAsync);
   };
 
   return (

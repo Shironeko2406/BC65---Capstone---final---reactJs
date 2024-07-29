@@ -3,8 +3,6 @@ import ProjectReducer from "./Reducers/ProjectReducer";
 import UsersReducer from "./Reducers/UsersReducer";
 import ProjectCategoryReducer from "./Reducers/ProjectCategoryReducer";
 
-
-  
 export const store:any = configureStore({
   reducer: {
     number: (state: number = 1) => state,
@@ -16,5 +14,4 @@ export const store:any = configureStore({
 
 export type RootState = ReturnType<typeof store.getState>;
 export type DispatchType = typeof store.dispatch;
-
 export type GetStateMethodType = typeof store.getState;

@@ -8,7 +8,6 @@ import TemplateUI from "./Pages/TempUI/TemplateUI";
 import ProjectManagement from "./Pages/ProjectManagement";
 import CreateProject from "./Pages/CreateProject";
 import UserManagement from "./Pages/UserManagement";
-import EditProject from "./Pages/Modals/ProjectDrawer/EditProject";
 
 function App() {
   return (

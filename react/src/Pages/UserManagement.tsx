@@ -12,12 +12,12 @@ import {
   deleteUserApi,
   editUserApi,
   getUserListApi,
-  UserInfo,
 } from "../Redux/Reducers/UsersReducer";
 import { DispatchType, RootState } from "../Redux/store";
 import "antd/dist/reset.css";
 import UserDrawer from "./Modals/UserDrawer/UserDrawer";
 import { useNavigate } from "react-router-dom";
+import { UserInfo } from "../Models/UserModalType";
 
 const UserManagement: React.FC = () => {
   const dispatch: DispatchType = useDispatch();
