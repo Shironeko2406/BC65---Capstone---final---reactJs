@@ -19,17 +19,11 @@ import { NavLink, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { signupActionApi } from "../Redux/Reducers/UsersReducer";
 import { DispatchType } from "../Redux/store";
+import { RegisterFormValues } from "../Models/UserModalType";
 
 const { useToken } = theme;
 const { useBreakpoint } = Grid;
 const { Text, Title } = Typography;
-
-interface RegisterFormValues {
-  email: string;
-  passWord: string;
-  name: string;
-  phoneNumber: string;
-}
 
 const Register: React.FC = () => {
   const { token } = useToken();
@@ -42,6 +36,7 @@ const Register: React.FC = () => {
       console.log("Received values of form: ", values);
       const signupActionThunk = signupActionApi(values);
       await dispatch(signupActionThunk);
+      console.log(values)
       navigate("/");
     } catch (error) {
       console.log(error);
@@ -132,7 +127,7 @@ const Register: React.FC = () => {
             <Input prefix={<MailOutlined />} placeholder="Email" />
           </Form.Item>
           <Form.Item
-            name="password"
+            name="passWord"
             extra="Mật khẩu tối đa 8 kí tự."
             rules={[
               {
@@ -174,7 +169,7 @@ const Register: React.FC = () => {
             </Select>
           </Form.Item>
           <Form.Item
-            name="phone"
+            name="phoneNumber"
             rules={[
               { required: true, message: "Please input your phone number!" },
               {

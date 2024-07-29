@@ -7,16 +7,7 @@ import { DispatchType } from "../store";
 import { httpClient } from "../../Util/UtilFunction";
 
 const initialState: ProjectCategoryState = {
-  projectCategory: [
-    {
-      id: 1,
-      projectCategoryName: "Dự án web",
-    },
-    {
-      id: 2,
-      projectCategoryName: "Dự án phần mềm",
-    },
-  ],
+  projectCategory: [],
 };
 
 const ProjectCategoryReducer = createSlice({
