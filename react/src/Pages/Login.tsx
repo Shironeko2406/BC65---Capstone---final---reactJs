@@ -1,11 +1,12 @@
 import React from "react";
 import { Button, Checkbox, Form, Grid, Input, theme, Typography } from "antd";
 import { useDispatch } from "react-redux";
-import { LockOutlined, MailOutlined } from "@ant-design/icons";
+import { FacebookOutlined, LockOutlined, MailOutlined } from "@ant-design/icons";
 import { NavLink, useNavigate } from "react-router-dom";
 import { loginActionApi } from "../Redux/Reducers/UsersReducer";
 import { DispatchType } from "../Redux/store";
 import { LoginFormValues } from "../Models/UserModalType";
+import { signInWithFacebook } from "../Firebase/Config";
 
 const { useToken } = theme;
 const { useBreakpoint } = Grid;
@@ -140,6 +141,21 @@ const Login: React.FC = () => {
           <Form.Item style={{ marginBottom: "0px" }}>
             <Button block type="primary" htmlType="submit">
               Log in
+            </Button>
+            <Button
+              block
+              type="default"
+              icon={<FacebookOutlined />}
+              onClick={signInWithFacebook}
+              style={{
+                marginTop: '16px',
+                backgroundColor: '#4267B2',
+                borderColor: '#4267B2',
+                color: 'white',
+                fontSize: '16px',
+              }}
+            >
+              Login with Facebook
             </Button>
             <div style={styles.footer}>
               <Text style={styles.text}>Don't have an account?</Text>{" "}
