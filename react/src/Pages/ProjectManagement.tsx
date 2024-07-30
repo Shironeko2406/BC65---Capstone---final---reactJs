@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { Table, Button, Tag, Avatar, Tooltip, Dropdown, Select } from "antd";
-import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
+import { Table, Button, Tag, Avatar, Tooltip, Dropdown, Select, Menu } from "antd";
+import { EditOutlined, DeleteOutlined, CloseOutlined } from "@ant-design/icons";
 import { useDispatch, useSelector } from "react-redux";
 import { DispatchType, RootState } from "../Redux/store";
-import { AssignUsersToProjectActionAsync, DeleteProjectActionAsync, GetProjectAllActionAsync } from "../Redux/Reducers/ProjectReducer";
+import { AssignUsersToProjectActionAsync, DeleteProjectActionAsync, GetProjectAllActionAsync, RemoveUserFromProjectActionAsync } from "../Redux/Reducers/ProjectReducer";
 import { Creator, Member, Project } from "../Models/ProjectModalType";
 import EditProject from "./Modals/ProjectDrawer/EditProject";
 import { GetProjectCategoryActionAsync } from "../Redux/Reducers/ProjectCategoryReducer";
@@ -21,12 +21,13 @@ const ProjectManagement = () => {
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [isDrawerVisible, setIsDrawerVisible] = useState(false);
   const [selectedMembers, setSelectedMembers] = useState<number[]>([]);
+  const [visibleMemberDropdown, setVisibleMemberDropdown] = useState<number | null>(null);
 
   useEffect(() => {
     dispatch(GetProjectAllActionAsync());
     dispatch(GetProjectCategoryActionAsync());
     dispatch(getUserListApi());
-  }, [dispatch]);
+  }, []);
 
   const showDrawer = (project: Project) => {
     setSelectedProject(project);
@@ -45,10 +46,12 @@ const ProjectManagement = () => {
   const handleAddMembers = (projectId: number) => {
     if (selectedMembers.length > 0) {
       dispatch(AssignUsersToProjectActionAsync(projectId, selectedMembers));
-      console.log(selectedMembers);
-      console.log(projectId);
       setSelectedMembers([]);
     }
+  };
+
+  const handleRemoveMember = (projectId: number, userId: number) => {
+    dispatch(RemoveUserFromProjectActionAsync(projectId, userId));
   };
 
   const renderAddMemberDropdown = (projectId: number) => (
@@ -78,6 +81,7 @@ const ProjectManagement = () => {
             type="primary"
             block
             onClick={() => handleAddMembers(projectId)}
+            disabled={selectedMembers.length === 0}
           >
             Add Members
           </Button>
@@ -93,6 +97,24 @@ const ProjectManagement = () => {
         </Option>
       ))}
     </Select>
+  );
+
+  const renderMemberDropdown = (project: Project) => (
+    <Menu>
+      {project.members.map((member: Member) => (
+        <Menu.Item key={member.userId}>
+          <div style={{ display: "flex", alignItems: "center" }}>
+            <Avatar src={member.avatar} size="small" />
+            <span style={{ marginLeft: 8, flexGrow: 1 }}>{member.name}</span>
+            <Button
+              type="text"
+              icon={<CloseOutlined />}
+              onClick={() => handleRemoveMember(project.id, member.userId)}
+            />
+          </div>
+        </Menu.Item>
+      ))}
+    </Menu>
   );
 
   const columns = [
@@ -130,16 +152,26 @@ const ProjectManagement = () => {
         return (
           <div style={{ display: "flex", alignItems: "center" }}>
             {visibleMembers.map((member: Member, index: number) => (
-              <div
+              <Dropdown
                 key={member.userId}
-                style={{
-                  position: "relative",
-                  marginLeft: index > 0 ? -12 : 0, // Overlap avatars
-                  zIndex: visibleMembers.length - index, // Stack avatars
+                overlay={() => renderMemberDropdown(project)}
+                visible={visibleMemberDropdown === member.userId}
+                onVisibleChange={(visible) => {
+                  setVisibleMemberDropdown(visible ? member.userId : null);
                 }}
+                arrow
               >
-                <Avatar src={member.avatar} size="large" />
-              </div>
+                <div
+                  style={{
+                    position: "relative",
+                    marginLeft: index > 0 ? -12 : 0, // Overlap avatars
+                    zIndex: visibleMembers.length - index, // Stack avatars
+                    cursor: "pointer",
+                  }}
+                >
+                  <Avatar src={member.avatar} size="large" />
+                </div>
+              </Dropdown>
             ))}
             {hiddenMembersCount > 0 && (
               <Tooltip
@@ -171,6 +203,7 @@ const ProjectManagement = () => {
             <Dropdown
               overlay={() => renderAddMemberDropdown(project.id)}
               trigger={["click"]}
+              arrow
             >
               <Button type="dashed" shape="circle" icon={"+"} />
             </Dropdown>
@@ -213,3 +246,4 @@ const ProjectManagement = () => {
 };
 
 export default ProjectManagement;
+

@@ -1,7 +1,11 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { DispatchType } from "../store";
 import { httpClient, TOKEN_CYBERSOFT } from "../../Util/UtilFunction";
-import { FormCreateProject, Project, ProjectState } from "../../Models/ProjectModalType";
+import {
+  FormCreateProject,
+  Project,
+  ProjectState,
+} from "../../Models/ProjectModalType";
 import { message } from "antd";
 
 const initialState: ProjectState = {
@@ -135,6 +139,19 @@ export const AssignUsersToProjectActionAsync = (
       message.success("Users assigned successfully!");
     } catch (error: any) {
       message.error("Failed to assign users!");
+      console.error(error);
+    }
+  };
+};
+
+export const RemoveUserFromProjectActionAsync = (projectId: number, userId: number) => {
+  return async (dispatch: DispatchType) => {
+    try {
+      const res = await httpClient.post("/api/Project/removeUserFromProject",{projectId, userId});
+      dispatch(GetProjectAllActionAsync());
+      message.success(`${res.data.content}`);
+    } catch (error: any) {
+      message.error("Failed delete users!");
       console.error(error);
     }
   };
