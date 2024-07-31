@@ -12,25 +12,7 @@ import {
   setDataTextStorage,
 } from "../../Util/UtilFunction";
 import { DispatchType } from "../store";
-
-export interface UserLoggedType {
-  email: string;
-  passWord: string;
-}
-
-export interface UserInfo {
-  userId: number;
-  email: string;
-  passWord: string;
-  name: string;
-  phoneNumber: string;
-}
-
-export interface UsersState {
-  userLogin: UserLoggedType | null;
-  userInfo: UserInfo | null;
-  userList: UserInfo[];
-}
+import { UserInfo, UserLoggedType, UsersState } from "../../Models/UserModalType";
 
 const initialState: UsersState = {
   userLogin: getDataJSONStorage(USER_LOGIN),
@@ -40,6 +22,7 @@ const initialState: UsersState = {
     passWord: "",
     name: "",
     phoneNumber: "",
+    avatar:""
   },
   userList: [],
 };

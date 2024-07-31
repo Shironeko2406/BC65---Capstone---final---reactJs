@@ -1,0 +1,9 @@
+.custom-select .ant-select-selection-item {
+    display: flex;
+    align-items: center;
+  }
+  
+  .custom-select .ant-select-selection-item .ant-avatar {
+    margin-right: 8px;
+  }
+  

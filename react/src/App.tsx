@@ -8,7 +8,7 @@ import TemplateUI from "./Pages/TempUI/TemplateUI";
 import ProjectManagement from "./Pages/ProjectManagement";
 import CreateProject from "./Pages/CreateProject";
 import UserManagement from "./Pages/UserManagement";
-import EditProject from "./Pages/Modals/ProjectDrawer/EditProject";
+import ProjectDetail from "./Pages/ProjectDetail";
 
 function App() {
   return (
@@ -21,6 +21,10 @@ function App() {
               <Route
                 path="project"
                 element={<ProjectManagement></ProjectManagement>}
+              ></Route>
+              <Route
+                path="projectdetail/:id"
+                element={<ProjectDetail></ProjectDetail>}
               ></Route>
               <Route
                 path="create-project"

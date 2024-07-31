@@ -1,43 +1,13 @@
-// src/features/project/ProjectReducer.tsx
-
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { DispatchType } from "../store";
 import { httpClient, TOKEN_CYBERSOFT } from "../../Util/UtilFunction";
-import { FormCreateProject } from "../../Models/ProjectModalType";
+import {
+  FormCreateProject,
+  Project,
+  ProjectState,
+} from "../../Models/ProjectModalType";
 import { message } from "antd";
 
-// Định nghĩa kiểu cho member
-interface Member {
-  userId: number;
-  name: string;
-  avatar: string;
-}
-
-// Định nghĩa kiểu cho creator
-interface Creator {
-  id: number;
-  name: string;
-}
-
-// Định nghĩa kiểu cho một dự án
-export interface Project {
-  members: Member[];
-  creator: Creator;
-  id: number;
-  projectName: string;
-  description: string;
-  categoryId: number;
-  categoryName: string;
-  alias: string;
-  deleted: boolean;
-}
-
-// Định nghĩa kiểu cho trạng thái của slice
-interface ProjectState {
-  projectList: Project[];
-}
-
-// Khởi tạo trạng thái mặc định
 const initialState: ProjectState = {
   projectList: [
     {
@@ -73,7 +43,6 @@ const initialState: ProjectState = {
   ],
 };
 
-// Tạo slice với tên, trạng thái khởi tạo và các reducer
 const ProjectReducer = createSlice({
   name: "ProjectReducer",
   initialState,
@@ -84,10 +53,8 @@ const ProjectReducer = createSlice({
   },
 });
 
-// Xuất các actions để sử dụng trong các component hoặc nơi khác
 export const { setProjectList } = ProjectReducer.actions;
 
-// Xuất reducer để thêm vào store
 export default ProjectReducer.reducer;
 //--------------API CALL-------------
 
@@ -154,6 +121,38 @@ export const DeleteProjectActionAsync = (id: number) => {
       message.success("Delete success!");
     } catch (error: any) {
       console.log(error);
+    }
+  };
+};
+
+export const AssignUsersToProjectActionAsync = (
+  projectId: number,
+  userIds: number[]
+) => {
+  return async (dispatch: DispatchType) => {
+    try {
+      const promises = userIds.map((userId) =>
+        httpClient.post("/api/Project/assignUserProject", { projectId, userId })
+      );
+      await Promise.all(promises);
+      dispatch(GetProjectAllActionAsync());
+      message.success("Users assigned successfully!");
+    } catch (error: any) {
+      message.error("Failed to assign users!");
+      console.error(error);
+    }
+  };
+};
+
+export const RemoveUserFromProjectActionAsync = (projectId: number, userId: number) => {
+  return async (dispatch: DispatchType) => {
+    try {
+      const res = await httpClient.post("/api/Project/removeUserFromProject",{projectId, userId});
+      dispatch(GetProjectAllActionAsync());
+      message.success(`${res.data.content}`);
+    } catch (error: any) {
+      message.error("Failed delete users!");
+      console.error(error);
     }
   };
 };

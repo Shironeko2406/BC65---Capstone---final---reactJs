@@ -1,14 +1,7 @@
 // src/Modals/UserDrawer.tsx
 import React, { useEffect } from "react";
 import { Drawer, Form, Input, Button } from "antd";
-import { UserInfo } from "../../../Redux/Reducers/UsersReducer";
-
-interface UserDrawerProps {
-  visible: boolean;
-  onClose: () => void;
-  onSubmit: (values: UserInfo) => void;
-  initialValues: UserInfo | null;
-}
+import { UserDrawerProps} from "../../../Models/UserModalType";
 
 const UserDrawer: React.FC<UserDrawerProps> = ({
   visible,
