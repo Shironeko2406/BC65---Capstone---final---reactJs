@@ -9,6 +9,7 @@ import EditProject from "./Modals/ProjectDrawer/EditProject";
 import { GetProjectCategoryActionAsync } from "../Redux/Reducers/ProjectCategoryReducer";
 import { getUserListApi } from "../Redux/Reducers/UsersReducer";
 import { UserInfo } from "../Models/UserModalType";
+import { NavLink } from "react-router-dom";
 
 const { Option } = Select;
 
@@ -128,6 +129,7 @@ const ProjectManagement = () => {
       title: "Project Name",
       dataIndex: "projectName",
       key: "projectName",
+      render: (text: string, record: Project) => <NavLink to={`/home/projectdetail/${record.id}`}>{text}</NavLink>,
     },
     {
       title: "Category",
