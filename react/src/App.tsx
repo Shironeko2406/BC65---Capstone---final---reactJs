@@ -9,6 +9,7 @@ import ProjectManagement from "./Pages/ProjectManagement";
 import CreateProject from "./Pages/CreateProject";
 import UserManagement from "./Pages/UserManagement";
 import ProjectDetail from "./Pages/ProjectDetail";
+import TestCreateTask from "./Pages/TestCreateTask";
 
 function App() {
   return (
@@ -29,6 +30,10 @@ function App() {
               <Route
                 path="create-project"
                 element={<CreateProject></CreateProject>}
+              ></Route>
+              <Route
+                path="test-create-task"
+                element={<TestCreateTask></TestCreateTask>}
               ></Route>
               <Route
                 path=""
