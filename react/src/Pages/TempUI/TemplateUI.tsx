@@ -7,7 +7,13 @@ import {
 } from "@ant-design/icons";
 import type { MenuProps } from "antd";
 import { Breadcrumb, Layout, Menu, theme } from "antd";
-import { Outlet, useLocation, useNavigate } from "react-router-dom";
+import {
+  NavLink,
+  Outlet,
+  useLocation,
+  useNavigate,
+  useParams,
+} from "react-router-dom";
 import {
   removeDataTextStorage,
   TOKEN_AUTHOR,
@@ -50,8 +56,9 @@ const TemplateUI = (props: Props) => {
   } = theme.useToken();
   const location = useLocation();
   const navigate = useNavigate();
+  const { id } = useParams<{ id: string }>();
 
-  const getTitle = (pathname: string) => {
+  const getTitle = (pathname: string, id?: string) => {
     switch (pathname) {
       case "/home":
         return "User Management";
@@ -59,10 +66,24 @@ const TemplateUI = (props: Props) => {
         return "Create Project";
       case "/home/project":
         return "Project Management";
+      case `/home/projectdetail/${id}`:
+        return "Task Management";
       // thêm các case
       default:
         return "Dashboard";
     }
+  };
+
+  const generateBreadcrumbItems = (path: string) => {
+    const pathNames = path.split("/").filter((i) => i);
+    return pathNames.map((name, index) => {
+      const routeTo = `/${pathNames.slice(0, index + 1).join("/")}`;
+      return (
+        <Breadcrumb.Item key={routeTo}>
+          <NavLink to={routeTo}>{name}</NavLink>
+        </Breadcrumb.Item>
+      );
+    });
   };
 
   const onMenuClick: MenuProps["onClick"] = (e) => {
@@ -101,13 +122,14 @@ const TemplateUI = (props: Props) => {
       <Layout>
         <Header className="bg-white d-flex align-items-center px-3">
           <div className="container-fluid">
-            <h1 className="mb-0 fs-4 fw-bold">{getTitle(location.pathname)}</h1>
+            <h1 className="mb-0 fs-4 fw-bold">
+              {getTitle(location.pathname, id)}
+            </h1>
           </div>
         </Header>
         <Content style={{ margin: "0 16px" }}>
           <Breadcrumb style={{ margin: "16px 0" }}>
-            <Breadcrumb.Item>User</Breadcrumb.Item>
-            <Breadcrumb.Item>Bill</Breadcrumb.Item>
+            {generateBreadcrumbItems(location.pathname)}
           </Breadcrumb>
           <div
             style={{
