@@ -4,6 +4,7 @@ import { httpClient, TOKEN_CYBERSOFT } from "../../Util/UtilFunction";
 import {
   FormCreateProject,
   Project,
+  ProjectDetailTask,
   ProjectState,
 } from "../../Models/ProjectModalType";
 import { message } from "antd";
@@ -41,6 +42,84 @@ const initialState: ProjectState = {
       deleted: false,
     },
   ],
+  projectDetailById: {
+    lstTask: [
+      {
+        lstTaskDeTail: [],
+        statusId: "1",
+        statusName: "BACKLOG",
+        alias: "tồn đọng"
+      },
+      {
+        lstTaskDeTail: [],
+        statusId: "2",
+        statusName: "SELECTED FOR DEVELOPMENT",
+        alias: "được chọn để phát triển"
+      },
+      {
+        lstTaskDeTail: [],
+        statusId: "3",
+        statusName: "IN PROGRESS",
+        alias: "trong tiến trình"
+      },
+      {
+        lstTaskDeTail: [],
+        statusId: "4",
+        statusName: "DONE",
+        alias: "hoàn thành"
+      }
+    ],
+    members: [
+      {
+        userId: 6327,
+        name: "Hiếu",
+        avatar: "https://ui-avatars.com/api/?name=Hiếu",
+      },
+      {
+        userId: 3962,
+        name: "Đây là tên Ron",
+        avatar: "https://ui-avatars.com/api/?name=Đây là tên Ron",
+      },
+      {
+        userId: 2909,
+        name: "wewewerrr",
+        avatar: "https://ui-avatars.com/api/?name=wewewerrr",
+      },
+      {
+        userId: 5693,
+        name: "Iman Khaki Arvand",
+        avatar: "https://ui-avatars.com/api/?name=Iman Khaki Arvand",
+      },
+      {
+        userId: 5720,
+        name: "trinhluong",
+        avatar: "https://ui-avatars.com/api/?name=trinhluong",
+      },
+      {
+        userId: 5707,
+        name: "Banh my",
+        avatar: "https://ui-avatars.com/api/?name=Banh my",
+      },
+      {
+        userId: 5706,
+        name: "Hoho neeeee",
+        avatar: "https://ui-avatars.com/api/?name=Hoho neeeee",
+      }
+    ],
+    creator: {
+      id: 6915,
+      name: "Hiếu"
+    },
+    id: 15794,
+    projectName: "test híu up",
+    description: "<p>2 3<strong> con m&egrave;o <em>đi lạc n&egrave;</em></strong></p>",
+    projectCategory: {
+      id: 2,
+      name: "Dự án phần mềm"
+    },
+    alias: "test-hiu-up",
+    dateTime: "2024-08-01T22:15:06.3233796+07:00"
+  }
 };
 
 const ProjectReducer = createSlice({
@@ -50,10 +129,13 @@ const ProjectReducer = createSlice({
     setProjectList: (state: ProjectState, action: PayloadAction<Project[]>) => {
       state.projectList = action.payload;
     },
+    setProjectDetailById: (state: ProjectState, action: PayloadAction<ProjectDetailTask>) => {
+      state.projectDetailById = action.payload;
+    },
   },
 });
 
-export const { setProjectList } = ProjectReducer.actions;
+export const { setProjectList, setProjectDetailById } = ProjectReducer.actions;
 
 export default ProjectReducer.reducer;
 //--------------API CALL-------------
@@ -153,6 +235,19 @@ export const RemoveUserFromProjectActionAsync = (projectId: number, userId: numb
     } catch (error: any) {
       message.error("Failed delete users!");
       console.error(error);
+    }
+  };
+};
+
+export const GetProjectDetailByIdActionAsync = (id:number) => {
+  return async (dispatch: DispatchType) => {
+    try {
+      const res = await httpClient.get(`/api/Project/getProjectDetail?id=${id}`);
+      console.log(res.data.content);
+      const actionAsync = setProjectDetailById(res.data.content);
+      dispatch(actionAsync);
+    } catch (error: any) {
+      console.log(error);
     }
   };
 };

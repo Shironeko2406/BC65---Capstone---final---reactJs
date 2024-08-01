@@ -89,10 +89,14 @@
 
 // export default ProjectDetail;
 
-import React from "react";
+import React, { useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { Card, Col, Row, Typography, Avatar, Divider } from "antd";
-import { DragDropContext, Droppable, Draggable, DropResult, DroppableProvided  } from "react-beautiful-dnd";
+import { DragDropContext, Droppable, Draggable, DropResult, DroppableProvided, DraggableProvided  } from "react-beautiful-dnd";
+import { useDispatch, useSelector } from "react-redux";
+import { DispatchType, RootState } from "../Redux/store";
+import { GetProjectDetailByIdActionAsync } from "../Redux/Reducers/ProjectReducer";
+
 
 const { Text } = Typography;
 
@@ -118,7 +122,7 @@ const initialStages: Stage[] = [
       { id: "190", priority: "Medium", assignee: "NM" },
     ],
   },
-  { title: "IN PROGRESS", tasks: [{ id: "191", priority: "Medium", assignee: "NM" }] },
+  { title: "IN PROGRESS", tasks: [] },
   { title: "DONE", tasks: [] },
 ];
 
@@ -132,26 +136,6 @@ const reorder = (
   result.splice(endIndex, 0, removed);
   return result;
 };
-
-// const move = (stages: Stage[], source: { droppableId: string, index: number }, destination: { droppableId: string, index: number }) => {
-//   const startStageIndex = stages.findIndex(stage => stage.title === source.droppableId);
-//   const finishStageIndex = stages.findIndex(stage => stage.title === destination.droppableId);
-
-//   const startStage = stages[startStageIndex];
-//   const finishStage = stages[finishStageIndex];
-
-//   const startTasks = Array.from(startStage.tasks);
-//   const [movedTask] = startTasks.splice(source.index, 1);
-
-//   const finishTasks = Array.from(finishStage.tasks);
-//   finishTasks.splice(destination.index, 0, movedTask);
-
-//   const updatedStages = [...stages];
-//   updatedStages[startStageIndex] = { ...startStage, tasks: startTasks };
-//   updatedStages[finishStageIndex] = { ...finishStage, tasks: finishTasks };
-
-//   return updatedStages;
-// };
 
 const move = (
   stages: Stage[],
@@ -197,8 +181,16 @@ const move = (
 const ProjectDetail: React.FC<Props> = (props: Props) => {
   const params = useParams();
   const { id } = params;
-
   const [stages, setStages] = React.useState<Stage[]>(initialStages);
+  const dispatch: DispatchType = useDispatch();
+  const { projectDetailById } = useSelector(
+    (state: RootState) => state.ProjectReducer
+  );
+  console.log(projectDetailById)
+
+  useEffect(() => {
+      dispatch(GetProjectDetailByIdActionAsync(Number(id))); // Gọi action creator với id
+  }, [id]);
 
   const onDragEnd = (result: DropResult) => {
     const { destination, source } = result;
@@ -262,7 +254,7 @@ const ProjectDetail: React.FC<Props> = (props: Props) => {
                               index={taskIndex}
                               key={task.id}
                             >
-                              {(provided: DroppableProvided) => (
+                              {(provided: DraggableProvided) => (
                                 <Card
                                   ref={provided.innerRef}
                                   {...provided.draggableProps}
