@@ -7,3 +7,43 @@
     margin-right: 8px;
   }
   
+
+  .kanban-board {
+    display: flex;
+    justify-content: space-between;
+    padding: 24px;
+    background: #f0f2f5;
+  }
+  
+  .kanban-column {
+    width: 22%;
+    background: #fff;
+    padding: 10px;
+    border-radius: 4px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  }
+  
+  .kanban-column h3 {
+    text-align: center;
+    margin-bottom: 16px;
+  }
+  
+  .kanban-card {
+    margin-bottom: 16px;
+    border-radius: 4px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  }
+  
+  .assignees {
+    margin-top: 10px;
+    display: flex;
+    justify-content: flex-start;
+    gap: 8px;
+  }
+  
+  .kanban-column .ant-typography-secondary {
+    display: block;
+    text-align: center;
+    margin-top: 20px;
+  }
+  
