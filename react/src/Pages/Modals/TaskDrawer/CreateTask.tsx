@@ -10,6 +10,7 @@ import {
   Tag,
   Row,
   Col,
+  InputNumber,
 } from "antd";
 import { Editor } from "@tinymce/tinymce-react";
 
@@ -38,6 +39,7 @@ const TaskDrawer: React.FC<TaskDrawerProps> = ({ visible, onClose }) => {
 
   const handleSliderChange = (value: number) => {
     setTimetracking({
+      ...timeTracking,
       timeTrackingSpent: value,
       timeTrackingRemaining:
         timeTracking.timeTrackingSpent +
@@ -46,22 +48,22 @@ const TaskDrawer: React.FC<TaskDrawerProps> = ({ visible, onClose }) => {
     });
   };
 
-  const handleTimeSpentChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = Number(e.target.value);
-    setTimetracking({
-      ...timeTracking,
-      timeTrackingSpent: value,
-    });
+  const handleTimeSpentChange = (value: number | null) => {
+    if (value !== null) {
+      setTimetracking({
+        ...timeTracking,
+        timeTrackingSpent: value,
+      });
+    }
   };
 
-  const handleTimeRemainingChange = (
-    e: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    const value = Number(e.target.value);
-    setTimetracking({
-      ...timeTracking,
-      timeTrackingRemaining: value,
-    });
+  const handleTimeRemainingChange = (value: number | null) => {
+    if (value !== null) {
+      setTimetracking({
+        ...timeTracking,
+        timeTrackingRemaining: value,
+      });
+    }
   };
 
   const handleSubmit = () => {
@@ -159,6 +161,9 @@ const TaskDrawer: React.FC<TaskDrawerProps> = ({ visible, onClose }) => {
                 ))}
               </div>
             </Form.Item>
+            <Form.Item label="Original Estimate">
+              <InputNumber min={0} value={10} style={{ width: "100%" }} />
+            </Form.Item>
           </Col>
           <Col span={12}>
             <Form.Item label="Time Tracking">
@@ -181,13 +186,13 @@ const TaskDrawer: React.FC<TaskDrawerProps> = ({ visible, onClose }) => {
                 style={{
                   display: "flex",
                   justifyContent: "space-between",
-                  marginTop: 8,
+                  marginTop: 16,
                 }}
               >
                 <div style={{ width: "45%" }}>
                   <label>Time Spent</label>
-                  <input
-                    type="number"
+                  <InputNumber
+                    min={0}
                     value={timeTracking.timeTrackingSpent}
                     onChange={handleTimeSpentChange}
                     style={{ width: "100%" }}
@@ -195,21 +200,14 @@ const TaskDrawer: React.FC<TaskDrawerProps> = ({ visible, onClose }) => {
                 </div>
                 <div style={{ width: "45%" }}>
                   <label>Time Remaining</label>
-                  <input
-                    type="number"
+                  <InputNumber
+                    min={0}
                     value={timeTracking.timeTrackingRemaining}
                     onChange={handleTimeRemainingChange}
                     style={{ width: "100%" }}
                   />
                 </div>
               </div>
-            </Form.Item>
-          </Col>
-        </Row>
-        <Row gutter={16}>
-          <Col span={24}>
-            <Form.Item label="Original Estimate">
-              <Input type="number" value={10} />
             </Form.Item>
           </Col>
         </Row>
