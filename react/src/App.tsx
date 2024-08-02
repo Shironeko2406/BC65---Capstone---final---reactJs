@@ -10,6 +10,7 @@ import CreateProject from "./Pages/CreateProject";
 import UserManagement from "./Pages/UserManagement";
 import ProjectDetail from "./Pages/ProjectDetail";
 import TestCreateTask from "./Pages/TestCreateTask";
+import Page404 from "./Pages/Page404";
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
         <Provider store={store}>
           <Routes>
             <Route path="" element={<Login />}></Route>
+            <Route path="*" element={<Page404 />}></Route>
             <Route path="home" element={<TemplateUI></TemplateUI>}>
               <Route
                 path="project"
