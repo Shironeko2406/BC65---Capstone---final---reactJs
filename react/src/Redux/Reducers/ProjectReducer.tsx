@@ -45,29 +45,138 @@ const initialState: ProjectState = {
   projectDetailById: {
     lstTask: [
       {
-        lstTaskDeTail: [],
+        lstTaskDeTail: [
+          {
+            priorityTask: {
+              priorityId: 1,
+              priority: "High",
+            },
+            taskTypeDetail: {
+              id: 2,
+              taskType: "new task",
+            },
+            assigness: [
+              {
+                id: 3962,
+                avatar: "https://ui-avatars.com/api/?name=Đây là tên Ron",
+                name: "Đây là tên Ron",
+                alias: "nga-ho",
+              },
+              {
+                id: 2909,
+                avatar: "https://ui-avatars.com/api/?name=wewewerrr",
+                name: "wewewerrr",
+                alias: "viet",
+              },
+            ],
+            lstComment: [],
+            taskId: 12486,
+            taskName: "desgign",
+            alias: "desgign",
+            description: "<p>test</p>",
+            statusId: "1",
+            originalEstimate: 4,
+            timeTrackingSpent: 2,
+            timeTrackingRemaining: 3,
+            typeId: 0,
+            priorityId: 0,
+            projectId: 15794,
+          },
+          {
+            priorityTask: {
+              priorityId: 2,
+              priority: "Medium",
+            },
+            taskTypeDetail: {
+              id: 2,
+              taskType: "new task",
+            },
+            assigness: [
+              {
+                id: 3962,
+                avatar: "https://ui-avatars.com/api/?name=Đây là tên Ron",
+                name: "Đây là tên Ron",
+                alias: "nga-ho",
+              },
+              {
+                id: 2909,
+                avatar: "https://ui-avatars.com/api/?name=wewewerrr",
+                name: "wewewerrr",
+                alias: "viet",
+              },
+            ],
+            lstComment: [],
+            taskId: 12487,
+            taskName: "desgign project",
+            alias: "desgign-project",
+            description: "<p>test</p>",
+            statusId: "1",
+            originalEstimate: 4,
+            timeTrackingSpent: 2,
+            timeTrackingRemaining: 3,
+            typeId: 0,
+            priorityId: 0,
+            projectId: 15794,
+          },
+          {
+            priorityTask: {
+              priorityId: 2,
+              priority: "Medium",
+            },
+            taskTypeDetail: {
+              id: 2,
+              taskType: "new task",
+            },
+            assigness: [
+              {
+                id: 3962,
+                avatar: "https://ui-avatars.com/api/?name=Đây là tên Ron",
+                name: "Đây là tên Ron",
+                alias: "nga-ho",
+              },
+              {
+                id: 2909,
+                avatar: "https://ui-avatars.com/api/?name=wewewerrr",
+                name: "wewewerrr",
+                alias: "viet",
+              },
+            ],
+            lstComment: [],
+            taskId: 12488,
+            taskName: "connect firebase",
+            alias: "connect-firebase",
+            description: "<p>test</p>",
+            statusId: "1",
+            originalEstimate: 4,
+            timeTrackingSpent: 2,
+            timeTrackingRemaining: 3,
+            typeId: 0,
+            priorityId: 0,
+            projectId: 15794,
+          },
+        ],
         statusId: "1",
         statusName: "BACKLOG",
-        alias: "tồn đọng"
+        alias: "tồn đọng",
       },
       {
         lstTaskDeTail: [],
         statusId: "2",
         statusName: "SELECTED FOR DEVELOPMENT",
-        alias: "được chọn để phát triển"
+        alias: "được chọn để phát triển",
       },
       {
         lstTaskDeTail: [],
         statusId: "3",
         statusName: "IN PROGRESS",
-        alias: "trong tiến trình"
+        alias: "trong tiến trình",
       },
       {
         lstTaskDeTail: [],
         statusId: "4",
         statusName: "DONE",
-        alias: "hoàn thành"
-      }
+        alias: "hoàn thành",
+      },
     ],
     members: [
       {
@@ -104,22 +213,22 @@ const initialState: ProjectState = {
         userId: 5706,
         name: "Hoho neeeee",
         avatar: "https://ui-avatars.com/api/?name=Hoho neeeee",
-      }
+      },
     ],
     creator: {
       id: 6915,
-      name: "Hiếu"
+      name: "Hiếu",
     },
     id: 15794,
     projectName: "test híu up",
-    description: "<p>2 3<strong> con m&egrave;o <em>đi lạc n&egrave;</em></strong></p>",
+    description:
+      "<p>2 3<strong> con m&egrave;o <em>đi lạc n&egrave;</em></strong></p>",
     projectCategory: {
       id: 2,
-      name: "Dự án phần mềm"
+      name: "Dự án phần mềm",
     },
     alias: "test-hiu-up",
-    dateTime: "2024-08-01T22:15:06.3233796+07:00"
-  }
+  },
 };
 
 const ProjectReducer = createSlice({
@@ -129,7 +238,10 @@ const ProjectReducer = createSlice({
     setProjectList: (state: ProjectState, action: PayloadAction<Project[]>) => {
       state.projectList = action.payload;
     },
-    setProjectDetailById: (state: ProjectState, action: PayloadAction<ProjectDetailTask>) => {
+    setProjectDetailById: (
+      state: ProjectState,
+      action: PayloadAction<ProjectDetailTask>
+    ) => {
       state.projectDetailById = action.payload;
     },
   },
@@ -226,10 +338,16 @@ export const AssignUsersToProjectActionAsync = (
   };
 };
 
-export const RemoveUserFromProjectActionAsync = (projectId: number, userId: number) => {
+export const RemoveUserFromProjectActionAsync = (
+  projectId: number,
+  userId: number
+) => {
   return async (dispatch: DispatchType) => {
     try {
-      const res = await httpClient.post("/api/Project/removeUserFromProject",{projectId, userId});
+      const res = await httpClient.post("/api/Project/removeUserFromProject", {
+        projectId,
+        userId,
+      });
       dispatch(GetProjectAllActionAsync());
       message.success(`${res.data.content}`);
     } catch (error: any) {
@@ -239,10 +357,12 @@ export const RemoveUserFromProjectActionAsync = (projectId: number, userId: numb
   };
 };
 
-export const GetProjectDetailByIdActionAsync = (id:number) => {
+export const GetProjectDetailByIdActionAsync = (id: number) => {
   return async (dispatch: DispatchType) => {
     try {
-      const res = await httpClient.get(`/api/Project/getProjectDetail?id=${id}`);
+      const res = await httpClient.get(
+        `/api/Project/getProjectDetail?id=${id}`
+      );
       console.log(res.data.content);
       const actionAsync = setProjectDetailById(res.data.content);
       dispatch(actionAsync);

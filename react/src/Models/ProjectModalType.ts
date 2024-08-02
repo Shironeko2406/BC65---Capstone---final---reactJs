@@ -75,7 +75,6 @@ export interface Member {
     description: string;
     projectCategory: ProjectCategory;
     alias: string;
-    dateTime: string;
   }
 
   export interface TaskStatus {
@@ -87,8 +86,43 @@ export interface Member {
 
   // Định nghĩa kiểu cho TaskDetail
   export interface TaskDetail {
-    // Define properties for task details here
-  } 
+    priorityTask: PriorityTask;
+    taskTypeDetail: TaskTypeDetail;
+    assigness: Assignee[];
+    lstComment: Comment[];
+    taskId: number;
+    taskName: string;
+    alias: string;
+    description: string;
+    statusId: string;
+    originalEstimate: number;
+    timeTrackingSpent: number;
+    timeTrackingRemaining: number;
+    typeId: number;
+    priorityId: number;
+    projectId: number;
+  }
+
+  export interface PriorityTask {
+    priorityId: number;
+    priority: string;
+  }
+
+  export interface TaskTypeDetail {
+    id: number;
+    taskType: string;
+  }
+
+  export interface Assignee {
+    id: number;
+    avatar: string;
+    name: string;
+    alias: string;
+  }
+
+  export interface Comment {
+    // Define properties for comments here, if any
+  }
 
   // Định nghĩa kiểu cho ProjectCategory
   export interface ProjectCategory {
