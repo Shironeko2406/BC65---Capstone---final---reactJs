@@ -3,9 +3,11 @@ import { DispatchType } from "../store";
 import { httpClient, TOKEN_CYBERSOFT } from "../../Util/UtilFunction";
 import {
   FormCreateProject,
+  FormTaskUpdate,
   Project,
   ProjectDetailTask,
   ProjectState,
+  TaskDetail,
 } from "../../Models/ProjectModalType";
 import { message } from "antd";
 
@@ -229,6 +231,42 @@ const initialState: ProjectState = {
     },
     alias: "test-hiu-up",
   },
+  taskDetail: {
+    priorityTask: {
+      priorityId: 1,
+      priority: "High",
+    },
+    taskTypeDetail: {
+      id: 2,
+      taskType: "new task",
+    },
+    assigness: [
+      {
+        id: 3962,
+        avatar: "https://ui-avatars.com/api/?name=Đây là tên Ron",
+        name: "Đây là tên Ron",
+        alias: "nga-ho",
+      },
+      {
+        id: 2909,
+        avatar: "https://ui-avatars.com/api/?name=wewewerrr",
+        name: "wewewerrr",
+        alias: "viet",
+      },
+    ],
+    lstComment: [],
+    taskId: 12486,
+    taskName: "desgign",
+    alias: "desgign",
+    description: "<p>test</p>",
+    statusId: "1",
+    originalEstimate: 4,
+    timeTrackingSpent: 2,
+    timeTrackingRemaining: 3,
+    typeId: 2,
+    priorityId: 1,
+    projectId: 15794,
+  },
 };
 
 const ProjectReducer = createSlice({
@@ -244,10 +282,13 @@ const ProjectReducer = createSlice({
     ) => {
       state.projectDetailById = action.payload;
     },
+    setTaskDetail: (state: ProjectState, action: PayloadAction<TaskDetail>) => {
+      state.taskDetail = action.payload;
+    },
   },
 });
 
-export const { setProjectList, setProjectDetailById } = ProjectReducer.actions;
+export const { setProjectList, setProjectDetailById, setTaskDetail } = ProjectReducer.actions;
 
 export default ProjectReducer.reducer;
 //--------------API CALL-------------
@@ -366,6 +407,51 @@ export const GetProjectDetailByIdActionAsync = (id: number) => {
       console.log(res.data.content);
       const actionAsync = setProjectDetailById(res.data.content);
       dispatch(actionAsync);
+    } catch (error: any) {
+      console.log(error);
+    }
+  };
+};
+
+export const GetTaskDetailByIdActionAsync = (id: number) => {
+  return async (dispatch: DispatchType) => {
+    try {
+      const res = await httpClient.get(
+        `/api/Project/getTaskDetail?taskId=${id}`
+      );
+      console.log(res.data.content);
+      dispatch(setTaskDetail(res.data.content));
+    } catch (error: any) {
+      console.log(error);
+    }
+  };
+};
+
+export const UpdateTaskActionAsync = (taskDataUpdate: FormTaskUpdate) => {
+  return async (dispatch: DispatchType) => {
+    try {
+      const res = await httpClient.post(
+        `/api/Project/updateTask`,
+        taskDataUpdate
+      );
+      console.log(res.data.content);
+      dispatch(GetProjectDetailByIdActionAsync(taskDataUpdate.projectId));
+      message.success("Update success!");
+    } catch (error: any) {
+      console.log(error);
+    }
+  };
+};
+
+export const UpdateStatusTaskActionAsync = (taskId: number, statusId: string, projectId: number) => {
+  return async (dispatch: DispatchType) => {
+    try {
+      const res = await httpClient.put(
+        `/api/Project/updateStatus`,
+        {taskId, statusId}
+      );
+      dispatch(GetProjectDetailByIdActionAsync(projectId));
+      message.success(`${res.data.content}`);
     } catch (error: any) {
       console.log(error);
     }
