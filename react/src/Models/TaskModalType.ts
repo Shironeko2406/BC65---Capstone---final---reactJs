@@ -8,7 +8,7 @@ export type Assignee = {
   };
   
   export type Task = {
-    id: string;
+    id: number;
     taskName: string;
     priority: string;
     assignees: Assignee[];

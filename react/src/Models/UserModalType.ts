@@ -17,6 +17,7 @@ export interface UserInfo {
     userLogin: UserLoggedType | null;
     userInfo: UserInfo | null;
     userList: UserInfo[];
+    userListByProjectId: UserInfo[]
   }
 
   export interface UserDrawerProps {
