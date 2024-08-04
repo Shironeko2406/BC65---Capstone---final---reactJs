@@ -23,7 +23,7 @@ import { GetPriorityActionAsync } from "../../../Redux/Reducers/PriorityReducer"
 import { GetStatusActionAsync } from "../../../Redux/Reducers/StatusReducer";
 import { GetTaskTypeActionAsync } from "../../../Redux/Reducers/TaskTypeReducer";
 import { getUserListByProjectIdActionAsync } from "../../../Redux/Reducers/UsersReducer";
-import { CreateTaskActionAsync } from "../../../Redux/Reducers/TaskReducer";
+import { CreateTaskActionAsync } from "../../../Redux/Reducers/ProjectReducer";
 
 interface TaskDrawerProps {
   visible: boolean;
@@ -137,7 +137,6 @@ const TaskDrawer: React.FC<TaskDrawerProps> = ({
 
   useEffect(() => {
     if (!visible) {
-      // Reset form and state when drawer is closed
       setEditorContent("");
       setTimetracking({
         timeTrackingSpent: 0,

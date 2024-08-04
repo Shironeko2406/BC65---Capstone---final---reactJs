@@ -28,6 +28,7 @@ export interface Member {
   export interface ProjectState {
     projectList: Project[];
     projectDetailById: ProjectDetailTask;
+    taskDetail: TaskDetail
     projectName: string;
   }
   
@@ -56,6 +57,20 @@ export interface Member {
     alias: string;
   }
   
+  export interface FormTaskUpdate {
+    taskName: string;
+    description: string;
+    typeId: number;
+    statusId: string;
+    listUserAsign: number[]; // Assuming it's an array of user IDs
+    priorityId: number;
+    originalEstimate: number;
+    timeTrackingSpent: number;
+    timeTrackingRemaining: number;
+    projectId: number;
+    taskId: string;
+  }
+  
 
   export interface EditProjectProps {
     visible: boolean;
@@ -64,6 +79,23 @@ export interface Member {
   }
 
 
+  export interface TaskDetail {
+    priorityTask: PriorityTask;
+    taskTypeDetail: TaskTypeDetail;
+    assigness: Assignee[];
+    lstComment: Comment[];  // Assuming this is an array of any type, adjust if you have a specific type
+    taskId: number;
+    taskName: string;
+    alias: string;
+    description: string;
+    statusId: string;
+    originalEstimate: number;
+    timeTrackingSpent: number;
+    timeTrackingRemaining: number;
+    typeId: number;
+    priorityId: number;
+    projectId: number;
+  }
 
   //--------------Phần Project detail cho trang project detail task
 

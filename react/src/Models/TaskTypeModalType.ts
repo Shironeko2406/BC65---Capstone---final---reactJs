@@ -6,3 +6,4 @@ export interface TaskType {
   export interface TaskTypeState {
     taskTypeList: TaskType[];
   }
+  

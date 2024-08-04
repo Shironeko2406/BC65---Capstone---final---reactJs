@@ -10,3 +10,4 @@ export interface Status {
   export interface StatusState {
     statusList: Status[];
   }
+  

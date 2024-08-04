@@ -9,6 +9,8 @@ import ProjectManagement from "./Pages/ProjectManagement";
 import CreateProject from "./Pages/CreateProject";
 import UserManagement from "./Pages/UserManagement";
 import ProjectDetail from "./Pages/ProjectDetail";
+import Page404 from "./Pages/Page404";
+import UpdateTask from "./Pages/Modals/TaskDrawer/UpdateTask";
 
 function App() {
   return (
@@ -17,7 +19,10 @@ function App() {
         <Provider store={store}>
           <Routes>
             <Route path="" element={<Login />}></Route>
+            <Route path="*" element={<Page404 />}></Route>
             <Route path="home" element={<TemplateUI></TemplateUI>}>
+              <Route path="up" element={<UpdateTask></UpdateTask>}></Route>
+
               <Route
                 path="project"
                 element={<ProjectManagement></ProjectManagement>}
