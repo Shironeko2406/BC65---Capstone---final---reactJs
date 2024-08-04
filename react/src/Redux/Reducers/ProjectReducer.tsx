@@ -442,3 +442,18 @@ export const UpdateTaskActionAsync = (taskDataUpdate: FormTaskUpdate) => {
     }
   };
 };
+
+export const UpdateStatusTaskActionAsync = (taskId: number, statusId: string, projectId: number) => {
+  return async (dispatch: DispatchType) => {
+    try {
+      const res = await httpClient.put(
+        `/api/Project/updateStatus`,
+        {taskId, statusId}
+      );
+      dispatch(GetProjectDetailByIdActionAsync(projectId));
+      message.success(`${res.data.content}`);
+    } catch (error: any) {
+      console.log(error);
+    }
+  };
+};
