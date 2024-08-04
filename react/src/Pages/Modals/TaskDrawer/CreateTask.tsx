@@ -1,4 +1,3 @@
-// src/Modals/TaskDrawer.tsx
 import React, { useState, useEffect } from "react";
 import {
   Drawer,
@@ -7,34 +6,73 @@ import {
   Select,
   Slider,
   Button,
-  Tag,
   Row,
   Col,
   InputNumber,
 } from "antd";
 import { Editor } from "@tinymce/tinymce-react";
-
-const { Option } = Select;
+import { RootState, DispatchType } from "../../../Redux/store";
+import { useDispatch, useSelector } from "react-redux";
+import { useParams } from "react-router-dom";
+import type { SelectProps } from "antd";
+import { Priority } from "../../../Models/PriorityModalType";
+import { Status } from "../../../Models/StatusModalType";
+import { TaskType } from "../../../Models/TaskTypeModalType";
+import { UserInfo } from "../../../Models/UserModalType";
+import { GetPriorityActionAsync } from "../../../Redux/Reducers/PriorityReducer";
+import { GetStatusActionAsync } from "../../../Redux/Reducers/StatusReducer";
+import { GetTaskTypeActionAsync } from "../../../Redux/Reducers/TaskTypeReducer";
+import { getUserListByProjectIdActionAsync } from "../../../Redux/Reducers/UsersReducer";
+import { CreateTaskActionAsync } from "../../../Redux/Reducers/TaskReducer";
 
 interface TaskDrawerProps {
   visible: boolean;
   onClose: () => void;
+  projectName: string;
 }
 
-const TaskDrawer: React.FC<TaskDrawerProps> = ({ visible, onClose }) => {
+const TaskDrawer: React.FC<TaskDrawerProps> = ({
+  visible,
+  onClose,
+  projectName,
+}) => {
   const [editorContent, setEditorContent] = useState("");
-  const [assignees, setAssignees] = useState<string[]>([]);
+  const [form] = Form.useForm();
   const [timeTracking, setTimetracking] = useState({
     timeTrackingSpent: 0,
     timeTrackingRemaining: 0,
   });
 
+  const dispatch: DispatchType = useDispatch();
+  const params = useParams();
+  const { id } = params;
+
+  const { userListByProjectId } = useSelector(
+    (state: RootState) => state.UsersReducer
+  );
+  const { priorityList } = useSelector(
+    (state: RootState) => state.PriorityReducer
+  );
+  const { taskTypeList } = useSelector(
+    (state: RootState) => state.TaskTypeReducer
+  );
+  const { statusList } = useSelector((state: RootState) => state.StatusReducer);
+
+  useEffect(() => {
+    if (visible) {
+      dispatch(GetPriorityActionAsync());
+      dispatch(GetTaskTypeActionAsync());
+      dispatch(GetStatusActionAsync());
+      dispatch(getUserListByProjectIdActionAsync(Number(id)));
+    }
+  }, [visible, dispatch, id]);
+
   const handleEditorChange = (content: string) => {
     setEditorContent(content);
   };
 
-  const handleAssigneesChange = (value: string[]) => {
-    setAssignees(value);
+  const handleChange = (value: string[]) => {
+    console.log(`selected ${value}`);
   };
 
   const handleSliderChange = (value: number) => {
@@ -67,21 +105,40 @@ const TaskDrawer: React.FC<TaskDrawerProps> = ({ visible, onClose }) => {
   };
 
   const handleSubmit = () => {
-    // Handle form submit logic
-    console.log("Form submitted");
+    form
+      .validateFields()
+      .then((values) => {
+        const data = {
+          ...values,
+          listUserAsign: values.assignees,
+          description: editorContent,
+          timeTrackingSpent: timeTracking.timeTrackingSpent,
+          timeTrackingRemaining: timeTracking.timeTrackingRemaining,
+          projectId: Number(id),
+        };
+        dispatch(CreateTaskActionAsync(data));
+        form.resetFields();
+        onClose();
+      })
+      .catch((info) => {
+        console.log("Validate Failed:", info);
+      });
   };
 
   const handleCancel = () => {
-    // Handle cancel logic
     onClose();
-    console.log("Form cancelled");
+    form.resetFields();
+    setEditorContent("");
+    setTimetracking({
+      timeTrackingSpent: 0,
+      timeTrackingRemaining: 0,
+    });
   };
 
   useEffect(() => {
     if (!visible) {
       // Reset form and state when drawer is closed
       setEditorContent("");
-      setAssignees([]);
       setTimetracking({
         timeTrackingSpent: 0,
         timeTrackingRemaining: 0,
@@ -92,6 +149,34 @@ const TaskDrawer: React.FC<TaskDrawerProps> = ({ visible, onClose }) => {
   const total =
     timeTracking.timeTrackingSpent + timeTracking.timeTrackingRemaining;
 
+  const priorityOptions: SelectProps["options"] = priorityList.map(
+    (priority: Priority) => ({
+      label: priority.priority,
+      value: priority.priorityId,
+    })
+  );
+
+  const taskTypeOptions: SelectProps["options"] = taskTypeList.map(
+    (taskType: TaskType) => ({
+      label: taskType.taskType,
+      value: taskType.id,
+    })
+  );
+
+  const statusOptions: SelectProps["options"] = statusList.map(
+    (status: Status) => ({
+      label: status.statusName,
+      value: status.statusId,
+    })
+  );
+
+  const assigneeOptions: SelectProps["options"] = userListByProjectId.map(
+    (assignee: UserInfo) => ({
+      label: assignee.name,
+      value: assignee.userId,
+    })
+  );
+
   return (
     <Drawer
       title="Create Task"
@@ -100,69 +185,81 @@ const TaskDrawer: React.FC<TaskDrawerProps> = ({ visible, onClose }) => {
       visible={visible}
       width={600}
     >
-      <Form layout="vertical">
+      <Form form={form} layout="vertical" name="createTaskForm">
         <Row gutter={16}>
           <Col span={12}>
             <Form.Item label="Project Name">
-              <Input value="Sample Project" />
+              <Input value={projectName} disabled />
             </Form.Item>
           </Col>
           <Col span={12}>
-            <Form.Item label="Task Name">
-              <Input value="Sample Task" />
+            <Form.Item
+              label="Task Name"
+              name="taskName"
+              rules={[{ required: true, message: "Please enter task name" }]}
+            >
+              <Input placeholder="Enter task name" />
             </Form.Item>
           </Col>
         </Row>
         <Row gutter={16}>
           <Col span={12}>
-            <Form.Item label="Priority">
-              <Select defaultValue="Medium">
-                <Option value="High">High</Option>
-                <Option value="Medium">Medium</Option>
-                <Option value="Low">Low</Option>
-              </Select>
+            <Form.Item
+              label="Priority"
+              name="priorityId"
+              rules={[{ required: true, message: "Please select priority" }]}
+            >
+              <Select placeholder="Select priority" options={priorityOptions} />
             </Form.Item>
           </Col>
           <Col span={12}>
-            <Form.Item label="Task Type">
-              <Select defaultValue="Feature">
-                <Option value="Feature">Feature</Option>
-                <Option value="Bug">Bug</Option>
-              </Select>
+            <Form.Item
+              label="Task Type"
+              name="typeId"
+              rules={[{ required: true, message: "Please select task type" }]}
+            >
+              <Select
+                placeholder="Select task type"
+                options={taskTypeOptions}
+              />
             </Form.Item>
           </Col>
         </Row>
         <Row gutter={16}>
           <Col span={24}>
-            <Form.Item label="Status">
-              <Select defaultValue="Open">
-                <Option value="Open">Open</Option>
-                <Option value="In Progress">In Progress</Option>
-                <Option value="Closed">Closed</Option>
-              </Select>
+            <Form.Item
+              label="Status"
+              name="statusId"
+              rules={[{ required: true, message: "Please select status" }]}
+            >
+              <Select placeholder="Select status" options={statusOptions} />
             </Form.Item>
           </Col>
         </Row>
         <Row gutter={16}>
           <Col span={12}>
-            <Form.Item label="Assignees">
+            <Form.Item
+              label="Assignees"
+              name="assignees"
+              rules={[{ required: true, message: "Please select assignees" }]}
+            >
               <Select
                 mode="multiple"
-                defaultValue={["John Doe", "Jane Smith"]}
-                onChange={handleAssigneesChange}
-              >
-                <Option value="John Doe">John Doe</Option>
-                <Option value="Jane Smith">Jane Smith</Option>
-                <Option value="Mark Johnson">Mark Johnson</Option>
-              </Select>
-              <div style={{ marginTop: 8 }}>
-                {assignees.map((assignee) => (
-                  <Tag key={assignee}>{assignee}</Tag>
-                ))}
-              </div>
+                placeholder="Select assignees"
+                onChange={handleChange}
+                options={assigneeOptions}
+                onSelect={(value) => {
+                  console.log(value);
+                }}
+              />
             </Form.Item>
-            <Form.Item label="Original Estimate">
-              <InputNumber min={0} value={10} style={{ width: "100%" }} />
+            <Form.Item label="Original Estimate" name="originalEstimate">
+              <InputNumber
+                min={0}
+                placeholder="Original estimate"
+                style={{ width: "100%" }}
+                type="number"
+              />
             </Form.Item>
           </Col>
           <Col span={12}>
@@ -196,6 +293,7 @@ const TaskDrawer: React.FC<TaskDrawerProps> = ({ visible, onClose }) => {
                     value={timeTracking.timeTrackingSpent}
                     onChange={handleTimeSpentChange}
                     style={{ width: "100%" }}
+                    type="number"
                   />
                 </div>
                 <div style={{ width: "45%" }}>
@@ -205,6 +303,7 @@ const TaskDrawer: React.FC<TaskDrawerProps> = ({ visible, onClose }) => {
                     value={timeTracking.timeTrackingRemaining}
                     onChange={handleTimeRemainingChange}
                     style={{ width: "100%" }}
+                    type="number"
                   />
                 </div>
               </div>

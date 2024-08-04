@@ -6,7 +6,6 @@
 // import { DispatchType, RootState } from "../Redux/store";
 // import { GetProjectDetailByIdActionAsync } from "../Redux/Reducers/ProjectReducer";
 
-
 // const { Text } = Typography;
 
 // type Task = {
@@ -103,22 +102,21 @@
 
 //   const onDragEnd = (result: DropResult) => {
 //     const { destination, source } = result;
-  
+
 //     if (!destination) {
 //       return;
 //     }
-  
+
 //     if (source.droppableId === destination.droppableId && source.index === destination.index) {
 //       return;
 //     }
-  
+
 //     console.log('Before move:', stages);
 //     const updatedStages = move(stages, source, destination);
 //     console.log('After move:', updatedStages);
-  
+
 //     setStages(updatedStages);
 //   };
-  
 
 //   return (
 //     <div style={{ padding: 15 }}>
@@ -240,17 +238,24 @@
 
 // export default ProjectDetail;
 
-
-
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { Card, Col, Row, Typography, Avatar, Divider } from "antd";
-import {DragDropContext, Droppable, Draggable, DropResult, DroppableProvided, DraggableProvided } from "react-beautiful-dnd";
+import { Card, Col, Row, Typography, Avatar, Divider, Button } from "antd";
+import { PlusOutlined } from "@ant-design/icons";
+import {
+  DragDropContext,
+  Droppable,
+  Draggable,
+  DropResult,
+  DroppableProvided,
+  DraggableProvided,
+} from "react-beautiful-dnd";
 import { useDispatch, useSelector } from "react-redux";
 import { DispatchType, RootState } from "../Redux/store";
 import { GetProjectDetailByIdActionAsync } from "../Redux/Reducers/ProjectReducer";
 import { Assignee, TaskDetail, TaskStatus } from "../Models/ProjectModalType";
 import { Stage, Task } from "../Models/TaskModalType";
+import CreateTask from "./Modals/TaskDrawer/CreateTask"; // Import CreateTask
 
 const { Text } = Typography;
 
@@ -312,8 +317,9 @@ const ProjectDetail: React.FC<Props> = (props: Props) => {
   const params = useParams();
   const { id } = params;
   const [stages, setStages] = useState<Stage[]>([]);
+  const [drawerVisible, setDrawerVisible] = useState(false); // State for drawer visibility
   const dispatch: DispatchType = useDispatch();
-  const { projectDetailById } = useSelector(
+  const { projectDetailById, projectName } = useSelector(
     (state: RootState) => state.ProjectReducer
   );
 
@@ -327,11 +333,11 @@ const ProjectDetail: React.FC<Props> = (props: Props) => {
       const transformedStages: Stage[] = projectDetailById.lstTask.map(
         (taskStatus: TaskStatus) => ({
           title: taskStatus.statusName,
-          tasks: taskStatus.lstTaskDeTail.map((taskDetail:TaskDetail) => ({
+          tasks: taskStatus.lstTaskDeTail.map((taskDetail: TaskDetail) => ({
             id: taskDetail.taskId.toString(),
             taskName: taskDetail.taskName,
             priority: taskDetail.priorityTask.priority,
-            assignees: taskDetail.assigness.map((assignee:Assignee) => ({
+            assignees: taskDetail.assigness.map((assignee: Assignee) => ({
               id: assignee.id,
               avatar: assignee.avatar,
               name: assignee.name,
@@ -360,6 +366,14 @@ const ProjectDetail: React.FC<Props> = (props: Props) => {
 
     const updatedStages = move(stages, source, destination);
     setStages(updatedStages);
+  };
+
+  const openDrawer = () => {
+    setDrawerVisible(true);
+  };
+
+  const closeDrawer = () => {
+    setDrawerVisible(false);
   };
 
   return (
@@ -469,9 +483,28 @@ const ProjectDetail: React.FC<Props> = (props: Props) => {
           )}
         </Droppable>
       </DragDropContext>
+
+      <Button
+        type="primary"
+        shape="circle"
+        icon={<PlusOutlined />}
+        size="large"
+        onClick={openDrawer}
+        style={{
+          position: "fixed",
+          bottom: 120,
+          right: 30,
+          boxShadow: "0 2px 8px rgba(0, 0, 0, 0.15)",
+        }}
+      />
+
+      <CreateTask
+        visible={drawerVisible}
+        onClose={closeDrawer}
+        projectName={projectName} // Truyền projectName vào CreateTask
+      />
     </div>
   );
 };
 
 export default ProjectDetail;
-

@@ -2,13 +2,21 @@ import { configureStore } from "@reduxjs/toolkit";
 import ProjectReducer from "./Reducers/ProjectReducer";
 import UsersReducer from "./Reducers/UsersReducer";
 import ProjectCategoryReducer from "./Reducers/ProjectCategoryReducer";
+import TaskTypeReducer from "./Reducers/TaskTypeReducer";
+import StatusReducer from "./Reducers/StatusReducer";
+import PriorityReducer from "./Reducers/PriorityReducer";
+import TaskReducer from "./Reducers/TaskReducer";
 
-export const store:any = configureStore({
+export const store: any = configureStore({
   reducer: {
     number: (state: number = 1) => state,
     UsersReducer,
     ProjectReducer,
     ProjectCategoryReducer,
+    TaskTypeReducer,
+    StatusReducer,
+    PriorityReducer,
+    TaskReducer,
   },
 });
 

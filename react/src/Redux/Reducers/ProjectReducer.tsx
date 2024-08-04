@@ -229,6 +229,7 @@ const initialState: ProjectState = {
     },
     alias: "test-hiu-up",
   },
+  projectName: "",
 };
 
 const ProjectReducer = createSlice({
@@ -243,6 +244,7 @@ const ProjectReducer = createSlice({
       action: PayloadAction<ProjectDetailTask>
     ) => {
       state.projectDetailById = action.payload;
+      state.projectName = action.payload.projectName;
     },
   },
 });

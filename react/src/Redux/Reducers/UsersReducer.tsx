@@ -12,7 +12,11 @@ import {
   setDataTextStorage,
 } from "../../Util/UtilFunction";
 import { DispatchType } from "../store";
-import { UserInfo, UserLoggedType, UsersState } from "../../Models/UserModalType";
+import {
+  UserInfo,
+  UserLoggedType,
+  UsersState,
+} from "../../Models/UserModalType";
 
 const initialState: UsersState = {
   userLogin: getDataJSONStorage(USER_LOGIN),
@@ -22,9 +26,10 @@ const initialState: UsersState = {
     passWord: "",
     name: "",
     phoneNumber: "",
-    avatar:""
+    avatar: "",
   },
   userList: [],
+  userListByProjectId: [],
 };
 
 const UsersReducer = createSlice({
@@ -42,6 +47,9 @@ const UsersReducer = createSlice({
     },
     setUserList: (state, action: PayloadAction<UserInfo[]>) => {
       state.userList = action.payload;
+    },
+    setUserListByProjectId: (state, action: PayloadAction<UserInfo[]>) => {
+      state.userListByProjectId = action.payload;
     },
     removeUserFromList: (state, action: PayloadAction<number>) => {
       state.userList = state.userList.filter(
@@ -66,6 +74,7 @@ export const {
   setUserList,
   removeUserFromList,
   updateUserInList,
+  setUserListByProjectId,
 } = UsersReducer.actions;
 
 export default UsersReducer.reducer;
@@ -249,6 +258,20 @@ export const editUserApi = (user: UserInfo) => {
         message.error("Failed to edit user: " + error.message);
         console.error("Error details:", error);
       }
+    }
+  };
+};
+
+export const getUserListByProjectIdActionAsync = (id: number) => {
+  return async (dispatch: DispatchType) => {
+    try {
+      const res = await httpClient.get(
+        `/api/Users/getUserByProjectId?idProject=${id}`
+      );
+      console.log(res.data.content);
+      dispatch(setUserListByProjectId(res.data.content));
+    } catch (error: any) {
+      console.log(error);
     }
   };
 };

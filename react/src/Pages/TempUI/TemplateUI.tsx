@@ -43,7 +43,6 @@ const items: MenuItem[] = [
   getItem("Project", "sub1", <FolderOutlined />, [
     getItem("Project Management", "/home/project", <DesktopOutlined />),
     getItem("Create Project", "/home/create-project", <DesktopOutlined />),
-    getItem("Test Create Task", "/home/test-create-task", <DesktopOutlined />),
   ]),
   getItem("Logout", "logout", <LogoutOutlined />),
 ];
@@ -69,8 +68,7 @@ const TemplateUI = (props: Props) => {
         return "Project Management";
       case `/home/projectdetail/${id}`:
         return "Task Management";
-      case "/home/test-create-task":
-        return "Test Create Task";
+
       // thêm các case
       default:
         return "Dashboard";
