@@ -12,7 +12,11 @@ import {
   setDataTextStorage,
 } from "../../Util/UtilFunction";
 import { DispatchType } from "../store";
-import { UserInfo, UserLoggedType, UsersState } from "../../Models/UserModalType";
+import {
+  UserInfo,
+  UserLoggedType,
+  UsersState,
+} from "../../Models/UserModalType";
 
 const initialState: UsersState = {
   userLogin: getDataJSONStorage(USER_LOGIN),
@@ -22,10 +26,10 @@ const initialState: UsersState = {
     passWord: "",
     name: "",
     phoneNumber: "",
-    avatar:""
+    avatar: "",
   },
   userList: [],
-  userListByProjectId: []
+  userListByProjectId: [],
 };
 
 const UsersReducer = createSlice({
@@ -70,7 +74,7 @@ export const {
   setUserList,
   removeUserFromList,
   updateUserInList,
-  setUserListByProjectId
+  setUserListByProjectId,
 } = UsersReducer.actions;
 
 export default UsersReducer.reducer;
@@ -258,14 +262,16 @@ export const editUserApi = (user: UserInfo) => {
   };
 };
 
-export const getUserListByProjectIdActionAsync= (id: number) => {
+export const getUserListByProjectIdActionAsync = (id: number) => {
   return async (dispatch: DispatchType) => {
     try {
-      const res = await httpClient.get(`/api/Users/getUserByProjectId?idProject=${id}`);
+      const res = await httpClient.get(
+        `/api/Users/getUserByProjectId?idProject=${id}`
+      );
       console.log(res.data.content);
       dispatch(setUserListByProjectId(res.data.content));
     } catch (error: any) {
-      console.log(error)
+      console.log(error);
     }
   };
 };

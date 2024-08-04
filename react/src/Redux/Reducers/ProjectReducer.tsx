@@ -10,6 +10,7 @@ import {
   TaskDetail,
 } from "../../Models/ProjectModalType";
 import { message } from "antd";
+import { createTaskForm } from "../../Models/TaskModalType";
 
 const initialState: ProjectState = {
   projectList: [
@@ -267,6 +268,7 @@ const initialState: ProjectState = {
     priorityId: 1,
     projectId: 15794,
   },
+  projectName: "",
 };
 
 const ProjectReducer = createSlice({
@@ -281,6 +283,7 @@ const ProjectReducer = createSlice({
       action: PayloadAction<ProjectDetailTask>
     ) => {
       state.projectDetailById = action.payload;
+      state.projectName = action.payload.projectName;
     },
     setTaskDetail: (state: ProjectState, action: PayloadAction<TaskDetail>) => {
       state.taskDetail = action.payload;
@@ -288,7 +291,8 @@ const ProjectReducer = createSlice({
   },
 });
 
-export const { setProjectList, setProjectDetailById, setTaskDetail } = ProjectReducer.actions;
+export const { setProjectList, setProjectDetailById, setTaskDetail } =
+  ProjectReducer.actions;
 
 export default ProjectReducer.reducer;
 //--------------API CALL-------------
@@ -443,13 +447,30 @@ export const UpdateTaskActionAsync = (taskDataUpdate: FormTaskUpdate) => {
   };
 };
 
-export const UpdateStatusTaskActionAsync = (taskId: number, statusId: string, projectId: number) => {
+export const CreateTaskActionAsync = (data: createTaskForm) => {
   return async (dispatch: DispatchType) => {
     try {
-      const res = await httpClient.put(
-        `/api/Project/updateStatus`,
-        {taskId, statusId}
-      );
+      await httpClient.post("/api/Project/createTask", data);
+      message.success("Task created successfully");
+      dispatch(GetProjectDetailByIdActionAsync(data.projectId));
+    } catch (error: any) {
+      console.error("Failed to create task:", error);
+      message.error("Failed to create task");
+    }
+  };
+};
+
+export const UpdateStatusTaskActionAsync = (
+  taskId: number,
+  statusId: string,
+  projectId: number
+) => {
+  return async (dispatch: DispatchType) => {
+    try {
+      const res = await httpClient.put(`/api/Project/updateStatus`, {
+        taskId,
+        statusId,
+      });
       dispatch(GetProjectDetailByIdActionAsync(projectId));
       message.success(`${res.data.content}`);
     } catch (error: any) {
