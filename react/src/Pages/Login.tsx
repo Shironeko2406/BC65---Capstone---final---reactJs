@@ -1,7 +1,11 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Button, Checkbox, Form, Grid, Input, theme, Typography } from "antd";
 import { useDispatch } from "react-redux";
-import { FacebookOutlined, LockOutlined, MailOutlined } from "@ant-design/icons";
+import {
+  FacebookOutlined,
+  LockOutlined,
+  MailOutlined,
+} from "@ant-design/icons";
 import { NavLink, useNavigate } from "react-router-dom";
 import { loginActionApi } from "../Redux/Reducers/UsersReducer";
 import { DispatchType } from "../Redux/store";
@@ -13,6 +17,7 @@ const { useBreakpoint } = Grid;
 const { Text, Title } = Typography;
 
 const Login: React.FC = () => {
+  const accessToken = localStorage.getItem("accessToken");
   const { token } = useToken();
   const screens = useBreakpoint();
   const navigate = useNavigate();
@@ -22,7 +27,7 @@ const Login: React.FC = () => {
       console.log("Received values of form: ", values);
       const loginActionThunk = loginActionApi(values.email, values.passWord);
       await dispatch(loginActionThunk);
-      //   navigate("/");
+      navigate("/home");
     } catch (error) {
       console.log(error);
     }
@@ -61,6 +66,12 @@ const Login: React.FC = () => {
       fontSize: screens.md ? token.fontSizeHeading2 : token.fontSizeHeading3,
     },
   };
+
+  useEffect(() => {
+    if (accessToken) {
+      navigate("/home", { replace: true });
+    }
+  }, [accessToken, navigate]);
 
   return (
     <section style={styles.section}>
@@ -148,11 +159,11 @@ const Login: React.FC = () => {
               icon={<FacebookOutlined />}
               onClick={signInWithFacebook}
               style={{
-                marginTop: '16px',
-                backgroundColor: '#4267B2',
-                borderColor: '#4267B2',
-                color: 'white',
-                fontSize: '16px',
+                marginTop: "16px",
+                backgroundColor: "#4267B2",
+                borderColor: "#4267B2",
+                color: "white",
+                fontSize: "16px",
               }}
             >
               Login with Facebook
