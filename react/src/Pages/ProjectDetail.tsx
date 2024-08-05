@@ -7,7 +7,11 @@ import {
   Typography,
   Avatar,
   Divider,
+  Button,
+  Modal,
+  message,
 } from "antd";
+import { PlusOutlined } from "@ant-design/icons";
 import {
   DragDropContext,
   Droppable,
@@ -30,6 +34,7 @@ import { GetStatusActionAsync } from "../Redux/Reducers/StatusReducer";
 import { GetPriorityActionAsync } from "../Redux/Reducers/PriorityReducer";
 import UpdateTask from "./Modals/TaskDrawer/UpdateTask";
 import { getUserListByProjectIdActionAsync } from "../Redux/Reducers/UsersReducer";
+import CreateTask from "./Modals/TaskDrawer/CreateTask"; // Import CreateTask
 
 const { Text } = Typography;
 
@@ -93,8 +98,9 @@ const ProjectDetail: React.FC<Props> = (props: Props) => {
   const [stages, setStages] = useState<Stage[]>([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [selectedTaskId, setSelectedTaskId] = useState<number | null>(null);
+  const [drawerVisible, setDrawerVisible] = useState(false); // State for drawer visibility
   const dispatch: DispatchType = useDispatch();
-  const { projectDetailById } = useSelector(
+  const { projectDetailById, projectName } = useSelector(
     (state: RootState) => state.ProjectReducer
   );
 
@@ -182,6 +188,14 @@ const ProjectDetail: React.FC<Props> = (props: Props) => {
       const taskId = Number(result.draggableId);
       dispatch(UpdateStatusTaskActionAsync(taskId, newStatusId, Number(id)));
     }
+  };
+
+  const openDrawer = () => {
+    setDrawerVisible(true);
+  };
+
+  const closeDrawer = () => {
+    setDrawerVisible(false);
   };
 
   return (
@@ -299,6 +313,26 @@ const ProjectDetail: React.FC<Props> = (props: Props) => {
           visible={isModalVisible}
         />
       </DragDropContext>
+
+      <Button
+        type="primary"
+        shape="circle"
+        icon={<PlusOutlined />}
+        size="large"
+        onClick={openDrawer}
+        style={{
+          position: "fixed",
+          bottom: 120,
+          right: 30,
+          boxShadow: "0 2px 8px rgba(0, 0, 0, 0.15)",
+        }}
+      />
+
+      <CreateTask
+        visible={drawerVisible}
+        onClose={closeDrawer}
+        projectName={projectName} // Truyền projectName vào CreateTask
+      />
     </div>
   );
 };

@@ -9,7 +9,6 @@ import ProjectManagement from "./Pages/ProjectManagement";
 import CreateProject from "./Pages/CreateProject";
 import UserManagement from "./Pages/UserManagement";
 import ProjectDetail from "./Pages/ProjectDetail";
-import TestCreateTask from "./Pages/TestCreateTask";
 import Page404 from "./Pages/Page404";
 import UpdateTask from "./Pages/Modals/TaskDrawer/UpdateTask";
 
@@ -36,10 +35,7 @@ function App() {
                 path="create-project"
                 element={<CreateProject></CreateProject>}
               ></Route>
-              <Route
-                path="test-create-task"
-                element={<TestCreateTask></TestCreateTask>}
-              ></Route>
+
               <Route
                 path=""
                 element={<UserManagement></UserManagement>}

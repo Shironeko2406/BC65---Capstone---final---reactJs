@@ -29,6 +29,7 @@ export interface Member {
     projectList: Project[];
     projectDetailById: ProjectDetailTask;
     taskDetail: TaskDetail
+    projectName: string;
   }
   
   // Định nghĩa kiểu cho thông tin chi tiết của một dự án (dành cho modal)
