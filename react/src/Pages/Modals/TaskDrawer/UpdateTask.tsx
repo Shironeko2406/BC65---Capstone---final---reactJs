@@ -10,7 +10,9 @@
 //   Avatar,
 //   Row,
 //   Col,
+//   List,
 // } from "antd";
+// import { Comment as AntComment } from "@ant-design/compatible";
 // import {
 //   DeleteOutlined,
 //   FileExcelOutlined,
@@ -24,10 +26,12 @@
 // import { Priority } from "../../../Models/PriorityModalType";
 // import { useDispatch } from "react-redux";
 // import { UpdateTaskActionAsync } from "../../../Redux/Reducers/ProjectReducer";
-// import { Assignee, Member } from "../../../Models/ProjectModalType";
+// import { Assignee, Comment, Member } from "../../../Models/ProjectModalType";
 // import * as XLSX from "xlsx";
 // import { Document, Packer, Paragraph, TextRun, HeadingLevel } from "docx";
 // import { saveAs } from "file-saver";
+// import moment from "moment";
+// import { DeleteCommentActionAsync } from "../../../Redux/Reducers/CommentReducer";
 
 // const { Option } = Select;
 // const { TextArea } = Input;
@@ -129,7 +133,6 @@
 //   const handleSave = () => {
 //     form.validateFields().then((values) => {
 //       if (taskId !== null) {
-//         // dispatch(UpdateTaskActionAsync({ ...values, taskId }));
 //         const dataUpdate = {
 //           ...values,
 //           description: editorContent,
@@ -143,6 +146,17 @@
 //       }
 //     });
 //   };
+
+//   //-----------------Comment---------------------------
+//   const handleDeleteComment = (idComment: number) => {
+//     if (taskId !== null) {
+//       dispatch(DeleteCommentActionAsync(taskId, idComment));
+//     } else {
+//       console.error("taskId is null");
+//     }
+//   };
+
+//   //---------------------------------------------------
 
 //   const handleExportExcel = () => {
 //     if (taskDetail) {
@@ -159,7 +173,9 @@
 //         OriginalEstimate: taskDetail.originalEstimate,
 //         TimeTrackingSpent: taskDetail.timeTrackingSpent,
 //         TimeTrackingRemaining: taskDetail.timeTrackingRemaining,
-//         Assignees: taskDetail.assigness.map((assignee: Assignee) => `${assignee.name} (${assignee.alias})`).join(", "),
+//         Assignees: taskDetail.assigness
+//           .map((assignee: Assignee) => `${assignee.name} (${assignee.alias})`)
+//           .join(", "),
 //         // Thêm các thuộc tính khác nếu cần
 //       };
 
@@ -229,9 +245,12 @@
 //                 text: `Time Tracking Remaining: ${taskDetail.timeTrackingRemaining}`,
 //               }),
 //               new Paragraph({
-//                 text: `Assignees: ${taskDetail.assigness.map(
-//                   (assignee:Assignee) => `${assignee.name} (${assignee.alias})`
-//                 ).join(", ")}`,
+//                 text: `Assignees: ${taskDetail.assigness
+//                   .map(
+//                     (assignee: Assignee) =>
+//                       `${assignee.name} (${assignee.alias})`
+//                   )
+//                   .join(", ")}`,
 //               }),
 //             ],
 //           },
@@ -279,7 +298,11 @@
 //               <span>TASK-{taskId}</span>
 //             </Col>
 //             <Col>
-//               <Button icon={<DownloadOutlined />} type="link" onClick={handleExportWord}>
+//               <Button
+//                 icon={<DownloadOutlined />}
+//                 type="link"
+//                 onClick={handleExportWord}
+//               >
 //                 Download report
 //               </Button>
 //               <Button
@@ -328,6 +351,36 @@
 //                   />
 //                 </div>
 //               </Form.Item>
+//               <List
+//                 className="comment-list"
+//                 itemLayout="horizontal"
+//                 dataSource={taskDetail?.lstComment || []}
+//                 renderItem={(item: Comment) => (
+//                   <li>
+//                     <AntComment
+//                       author={item.name}
+//                       avatar={item.avatar}
+//                       content={item.commentContent}
+//                       actions={[
+//                         <span
+//                           key="edit"
+//                           onClick={() => {}}
+//                           style={{ cursor: "pointer" }}
+//                         >
+//                           Edit
+//                         </span>,
+//                         <span
+//                           key="delete"
+//                           onClick={() => handleDeleteComment(item.id)}
+//                           style={{ paddingLeft: 8, cursor: "pointer" }}
+//                         >
+//                           Delete
+//                         </span>,
+//                       ]}
+//                     />
+//                   </li>
+//                 )}
+//               />
 //             </Col>
 //             <Col span={8}>
 //               <Form.Item name="statusId" label="STATUS">
@@ -441,26 +494,9 @@
 // export default UpdateTask;
 
 import React, { useEffect, useState } from "react";
-import {
-  Modal,
-  Form,
-  Input,
-  Select,
-  Button,
-  Slider,
-  InputNumber,
-  Avatar,
-  Row,
-  Col,
-  List,
-  Menu,
-} from "antd";
-import { Comment } from "@ant-design/compatible";
-import {
-  DeleteOutlined,
-  FileExcelOutlined,
-  DownloadOutlined,
-} from "@ant-design/icons";
+import { Modal, Form, Input, Select, Button, Slider, InputNumber, Avatar, Row, Col, List, Pagination} from "antd";
+import { Comment as AntComment } from "@ant-design/compatible";
+import {DeleteOutlined, FileExcelOutlined, DownloadOutlined, SendOutlined,} from "@ant-design/icons";
 import { Editor } from "@tinymce/tinymce-react";
 import { useSelector } from "react-redux";
 import { DispatchType, RootState } from "../../../Redux/store";
@@ -469,11 +505,11 @@ import { Status } from "../../../Models/StatusModalType";
 import { Priority } from "../../../Models/PriorityModalType";
 import { useDispatch } from "react-redux";
 import { UpdateTaskActionAsync } from "../../../Redux/Reducers/ProjectReducer";
-import { Assignee, Member } from "../../../Models/ProjectModalType";
+import { Assignee, Comment, Member } from "../../../Models/ProjectModalType";
 import * as XLSX from "xlsx";
 import { Document, Packer, Paragraph, TextRun, HeadingLevel } from "docx";
 import { saveAs } from "file-saver";
-import moment from "moment";
+import {AddCommentActionAsync, DeleteCommentActionAsync, EditCommentActionAsync} from "../../../Redux/Reducers/CommentReducer";
 
 const { Option } = Select;
 const { TextArea } = Input;
@@ -484,23 +520,6 @@ type Props = {
   onClose: () => void;
   visible: boolean;
 };
-
-const data = [
-  {
-    author: "Nguyen Van A",
-    avatar:
-      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTvFhZZXwg5aztwsQWFdLUQC2UhX8C8kOBG5w&s",
-    content: "Đây là bình luận đầu tiên.",
-    datetime: moment().subtract(1, "days").fromNow(),
-  },
-  {
-    author: "Tran Thi B",
-    avatar:
-      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTvFhZZXwg5aztwsQWFdLUQC2UhX8C8kOBG5w&s",
-    content: "Đây là bình luận thứ hai.",
-    datetime: moment().subtract(2, "days").fromNow(),
-  },
-];
 
 const UpdateTask: React.FC<Props> = ({
   projectId,
@@ -529,6 +548,18 @@ const UpdateTask: React.FC<Props> = ({
     timeTrackingRemaining: 0,
   });
   const [editorContent, setEditorContent] = useState<string>("");
+  const [editingCommentId, setEditingCommentId] = useState<number | null>(null);
+  const [editedCommentContent, setEditedCommentContent] = useState<string>("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize] = useState(2); // Number of comments per page
+  const [newComment, setNewComment] = useState<string>("");
+
+  const totalComments = taskDetail?.lstComment.length || 0;
+  const commentsToDisplay =
+    taskDetail?.lstComment.slice(
+      (currentPage - 1) * pageSize,
+      currentPage * pageSize
+    ) || [];
 
   const total =
     timeTracking.timeTrackingSpent + timeTracking.timeTrackingRemaining;
@@ -592,7 +623,6 @@ const UpdateTask: React.FC<Props> = ({
   const handleSave = () => {
     form.validateFields().then((values) => {
       if (taskId !== null) {
-        // dispatch(UpdateTaskActionAsync({ ...values, taskId }));
         const dataUpdate = {
           ...values,
           description: editorContent,
@@ -607,9 +637,66 @@ const UpdateTask: React.FC<Props> = ({
     });
   };
 
+  //-----------------Comment---------------------------
+  const handleDeleteComment = (idComment: number) => {
+    if (taskId !== null) {
+      dispatch(DeleteCommentActionAsync(taskId, idComment)).then(() => {
+        //fix lỗi nếu ở trang khác mà xóa hết comment sẽ bị no data
+        if (commentsToDisplay.length === 1 && currentPage > 1) {
+          setCurrentPage(currentPage - 1);
+        }
+      });
+    } else {
+      console.error("taskId is null");
+    }
+  };
+
+
+  const handleEditComment = (comment: Comment) => {
+    setEditingCommentId(comment.id);
+    setEditedCommentContent(comment.commentContent);
+  };
+
+  const handleSaveComment = () => {
+    if (taskId !== null && editingCommentId !== null) {
+      dispatch(
+        EditCommentActionAsync(taskId, editingCommentId, editedCommentContent)
+      );
+      setEditingCommentId(null);
+    } else {
+      console.error("Task ID or Comment ID is null.");
+    }
+  };
+
+  const handleCancelEdit = () => {
+    setEditingCommentId(null);
+    setEditedCommentContent("");
+  };
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
+
+  const handleSendComment = () => {
+    if (taskId !== null && newComment.trim()) {
+      dispatch(AddCommentActionAsync(taskId, newComment));
+      setNewComment(""); // Reset input after sending
+    } else {
+      console.error("Task ID is null or comment is empty.");
+    }
+  };
+
+  const handleEnterPress = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === "Enter") {
+      e.preventDefault(); // Prevents default behavior of creating a new line
+      handleSendComment();
+    }
+  };
+
+  //---------------------------------------------------
+
   const handleExportExcel = () => {
     if (taskDetail) {
-      // Chuyển đổi dữ liệu thành định dạng phù hợp cho Excel
       const data = {
         TaskId: taskDetail.taskId,
         TaskName: taskDetail.taskName,
@@ -625,7 +712,6 @@ const UpdateTask: React.FC<Props> = ({
         Assignees: taskDetail.assigness
           .map((assignee: Assignee) => `${assignee.name} (${assignee.alias})`)
           .join(", "),
-        // Thêm các thuộc tính khác nếu cần
       };
 
       // Chuyển đổi dữ liệu thành worksheet
@@ -792,44 +878,103 @@ const UpdateTask: React.FC<Props> = ({
                 />
               </Form.Item>
               <Form.Item name="comment" label="Comment">
-                {/* chổ này */}
                 <div style={{ display: "flex", alignItems: "center" }}>
-                  <Avatar style={{ backgroundColor: "#87d068" }}>DN</Avatar>
-                  <Input
+                  {/* <Avatar style={{ backgroundColor: "#87d068" }}>DN</Avatar>
+                  <TextArea
                     style={{ marginLeft: 8 }}
                     placeholder="Comment here..."
-                  />
+                  /> */}
+                  <Avatar style={{ backgroundColor: "#87d068" }} className="me-2">DN</Avatar>
+                  <Form.Item
+                    noStyle
+                  >
+                    <TextArea
+                      value={newComment}
+                      onChange={(e) => setNewComment(e.target.value)}
+                      placeholder="Comment here..."
+                      rows={2}
+                      className="me-2"
+                      onPressEnter={handleEnterPress} // Handle Enter key press
+                    />
+                  </Form.Item>
+                  <Button
+                    type="primary"
+                    onClick={handleSendComment}
+                    icon={<SendOutlined />}
+                  >
+                  </Button>
                 </div>
               </Form.Item>
               <List
                 className="comment-list"
                 itemLayout="horizontal"
-                dataSource={data}
-                renderItem={(item) => (
+                header={`Have ${taskDetail?.lstComment.length || 0} comments`}
+                dataSource={commentsToDisplay}
+                renderItem={(item: Comment) => (
                   <li>
-                    <Comment
-                      author={item.author}
+                    <AntComment
+                      author={item.name}
                       avatar={item.avatar}
-                      content={item.content}
-                      datetime={item.datetime}
+                      content={
+                        editingCommentId === item.id ? (
+                          <Input.TextArea
+                            value={editedCommentContent}
+                            onChange={(e) =>
+                              setEditedCommentContent(e.target.value)
+                            }
+                            autoSize={{ minRows: 2, maxRows: 6 }}
+                          />
+                        ) : (
+                          item.commentContent
+                        )
+                      }
                       actions={[
-                        <span
-                          key="edit"
-                          onClick={() => {}}
-                          style={{ cursor: "pointer" }}
-                        >
-                          Edit
-                        </span>,
-                        <span
-                          key="delete"
-                          style={{ paddingLeft: 8, cursor: "pointer" }}
-                        >
-                          Delete
-                        </span>,
+                        editingCommentId === item.id ? (
+                          <>
+                            <span
+                              key="save"
+                              onClick={handleSaveComment}
+                              style={{ cursor: "pointer" }}
+                            >
+                              Save
+                            </span>
+                            <span
+                              key="cancel"
+                              onClick={handleCancelEdit}
+                              style={{ paddingLeft: 8, cursor: "pointer" }}
+                            >
+                              Cancel
+                            </span>
+                          </>
+                        ) : (
+                          <>
+                            <span
+                              key="edit"
+                              onClick={() => handleEditComment(item)}
+                              style={{ cursor: "pointer" }}
+                            >
+                              Edit
+                            </span>
+                            <span
+                              key="delete"
+                              onClick={() => handleDeleteComment(item.id)}
+                              style={{ paddingLeft: 8, cursor: "pointer" }}
+                            >
+                              Delete
+                            </span>
+                          </>
+                        ),
                       ]}
                     />
                   </li>
                 )}
+              />
+              <Pagination
+                current={currentPage}
+                pageSize={pageSize}
+                total={totalComments}
+                onChange={handlePageChange}
+                style={{ marginTop: 16, textAlign: "center" }}
               />
             </Col>
             <Col span={8}>

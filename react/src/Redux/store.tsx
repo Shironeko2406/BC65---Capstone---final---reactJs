@@ -5,6 +5,7 @@ import ProjectCategoryReducer from "./Reducers/ProjectCategoryReducer";
 import TaskTypeReducer from "./Reducers/TaskTypeReducer";
 import StatusReducer from "./Reducers/StatusReducer";
 import PriorityReducer from "./Reducers/PriorityReducer";
+import CommentReducer from "./Reducers/CommentReducer";
 
 export const store: any = configureStore({
   reducer: {
@@ -15,6 +16,7 @@ export const store: any = configureStore({
     TaskTypeReducer,
     StatusReducer,
     PriorityReducer,
+    CommentReducer,
   },
 });
 
