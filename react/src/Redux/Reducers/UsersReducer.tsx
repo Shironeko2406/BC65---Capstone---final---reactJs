@@ -106,12 +106,10 @@ export const loginActionApi = (email: string, passWord: string) => {
       setCookie(TOKEN_AUTHOR, res.data.content.accessToken);
     } catch (error: any) {
       if (error.response) {
-        // API đã trả về phản hồi, ghi lại chi tiết lỗi
         const errorMessage = error.response.data?.message || "Unknown error";
         message.error("Login failed: " + errorMessage);
         console.error("Error details:", error.response.data);
       } else {
-        // Không nhận được phản hồi từ API
         message.error("Login failed: " + error.message);
         console.error("Error details:", error);
       }
@@ -146,7 +144,7 @@ export const signupActionApi = (signupInfo: Omit<UserInfo, "userId">) => {
   };
 };
 
-//----------------- Lấy danh sách người dùng-------------------
+//----------------- Lấy danh sách user-------------------
 export const getUserListApi = () => {
   return async (dispatch: DispatchType) => {
     try {
@@ -173,7 +171,7 @@ export const getUserListApi = () => {
   };
 };
 
-//----------- Xóa người dùng
+//----------- Xóa user-------------
 export const deleteUserApi = (userId: number) => {
   return async (dispatch: DispatchType) => {
     try {
@@ -227,7 +225,7 @@ export const deleteMultipleUsersApi = (userIds: number[]) => {
   };
 };
 
-//-------- Edit User
+//-------- E User-----------------
 export const editUserApi = (user: UserInfo) => {
   return async (dispatch: DispatchType) => {
     try {
@@ -262,6 +260,7 @@ export const editUserApi = (user: UserInfo) => {
   };
 };
 
+//-------------Lấy danh sách user theo idProject------
 export const getUserListByProjectIdActionAsync = (id: number) => {
   return async (dispatch: DispatchType) => {
     try {

@@ -58,7 +58,7 @@ httpClient.interceptors.response.use(
             "Unauthorized access - perhaps the user is not logged in or token expired."
           );
 
-          // navigateTo("/login");
+          navigateTo("/");
 
           break;
         case 403:
@@ -67,7 +67,7 @@ httpClient.interceptors.response.use(
             "Forbidden - you don't have permission to access this resource."
           );
 
-          // navigateTo("/login");
+          navigateTo("/");
 
           break;
         case 404:
