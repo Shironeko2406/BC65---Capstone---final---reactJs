@@ -46,4 +46,53 @@
     text-align: center;
     margin-top: 20px;
   }
+
+  .comment-list {
+    margin-top: 20px;
+  }
+  
+  .comment-list .ant-comment {
+    padding: 10px 16px;
+    background: #fff;
+    border-radius: 8px;
+    margin-bottom: 16px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .comment-list .ant-comment-content {
+    font-size: 14px;
+  }
+  
+  .comment-list .ant-comment-content-author-name {
+    font-weight: bold;
+    color: #333;
+  }
+  
+  .comment-list .ant-comment-content-detail {
+    color: #555;
+  }
+  
+  .comment-list .ant-comment-content-detail p {
+    margin: 0;
+  }
+  
+  .comment-list .ant-comment-avatar {
+    margin-right: 16px;
+  }
+  
+  .comment-list .ant-comment-actions {
+    margin-top: 8px;
+    display: flex;
+    align-items: center;
+    
+  }
+  
+  .comment-list .ant-comment-actions > li {
+    color: #1890ff;
+    cursor: pointer;
+  }
+  
+  .comment-list .ant-comment-actions > li:hover {
+    text-decoration: underline;
+  }
   
