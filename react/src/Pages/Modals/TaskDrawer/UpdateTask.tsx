@@ -792,6 +792,7 @@ const UpdateTask: React.FC<Props> = ({
                 />
               </Form.Item>
               <Form.Item name="comment" label="Comment">
+                {/* chổ này */}
                 <div style={{ display: "flex", alignItems: "center" }}>
                   <Avatar style={{ backgroundColor: "#87d068" }}>DN</Avatar>
                   <Input
