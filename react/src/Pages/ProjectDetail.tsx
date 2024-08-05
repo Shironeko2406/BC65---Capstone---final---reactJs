@@ -7,8 +7,6 @@ import {
   Typography,
   Avatar,
   Divider,
-  Modal,
-  message,
 } from "antd";
 import {
   DragDropContext,
