@@ -18,8 +18,10 @@ import "antd/dist/reset.css";
 import UserDrawer from "./Modals/UserDrawer/UserDrawer";
 import { useNavigate } from "react-router-dom";
 import { UserInfo } from "../Models/UserModalType";
+import { useLoading } from "../Contexts/LoadingContext";
 
 const UserManagement: React.FC = () => {
+  const { setLoading } = useLoading();
   const dispatch: DispatchType = useDispatch();
   const navigate = useNavigate();
   const { userList, userLogin } = useSelector(
@@ -36,9 +38,10 @@ const UserManagement: React.FC = () => {
       message.warning("You need to log in to access this page!");
       navigate("/");
     } else {
-      dispatch(getUserListApi());
+      setLoading(true);
+      dispatch(getUserListApi()).finally(() => setLoading(false));
     }
-  }, [dispatch, navigate, userLogin]);
+  }, [dispatch, navigate, userLogin, setLoading]);
 
   useEffect(() => {
     setFilteredUsers(userList);
@@ -48,7 +51,7 @@ const UserManagement: React.FC = () => {
     const value = e.target.value;
     setSearchText(value);
     const filteredData = userList.filter(
-      (user:UserInfo) =>
+      (user: UserInfo) =>
         user.userId.toString().includes(value) ||
         user.name.toLowerCase().includes(value.toLowerCase()) ||
         user.email.toLowerCase().includes(value.toLowerCase()) ||
@@ -69,7 +72,7 @@ const UserManagement: React.FC = () => {
   const handleEdit = (user: UserInfo) => {
     setCurrentUser(user);
     setIsDrawerVisible(true);
-    console.log(currentUser)
+    console.log(currentUser);
   };
 
   const handleUpdate = async (values: UserInfo) => {

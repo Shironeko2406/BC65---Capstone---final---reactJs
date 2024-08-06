@@ -20,6 +20,7 @@ import { useDispatch } from "react-redux";
 import { signupActionApi } from "../Redux/Reducers/UsersReducer";
 import { DispatchType } from "../Redux/store";
 import { RegisterFormValues } from "../Models/UserModalType";
+import { useLoading } from "../Contexts/LoadingContext";
 
 const { useToken } = theme;
 const { useBreakpoint } = Grid;
@@ -30,21 +31,25 @@ const Register: React.FC = () => {
   const screens = useBreakpoint();
   const dispatch: DispatchType = useDispatch();
   const navigate = useNavigate();
+  const { setLoading } = useLoading();
 
   const onFinish = async (values: RegisterFormValues) => {
+    setLoading(true);
     try {
       console.log("Received values of form: ", values);
       const signupActionThunk = signupActionApi(values);
       await dispatch(signupActionThunk);
-      console.log(values)
+      console.log(values);
       navigate("/");
     } catch (error) {
       console.log(error);
+    } finally {
+      setLoading(false);
     }
   };
 
   const onFinishFailed = (errorInfo: any) => {
-    message.warning("Vui lòng kiểm tra lại thông tin đăng kí.");
+    message.warning("Please check your registration information again.");
   };
 
   const styles = {

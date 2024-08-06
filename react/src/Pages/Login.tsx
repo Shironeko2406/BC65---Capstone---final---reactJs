@@ -11,12 +11,14 @@ import { loginActionApi } from "../Redux/Reducers/UsersReducer";
 import { DispatchType } from "../Redux/store";
 import { LoginFormValues } from "../Models/UserModalType";
 import { signInWithFacebook } from "../Firebase/Config";
+import { useLoading } from "../Contexts/LoadingContext";
 
 const { useToken } = theme;
 const { useBreakpoint } = Grid;
 const { Text, Title } = Typography;
 
 const Login: React.FC = () => {
+  const { setLoading } = useLoading();
   const accessToken = localStorage.getItem("accessToken");
   const { token } = useToken();
   const screens = useBreakpoint();
@@ -69,9 +71,13 @@ const Login: React.FC = () => {
 
   useEffect(() => {
     if (accessToken) {
-      navigate("/home", { replace: true });
+      setLoading(true);
+      setTimeout(() => {
+        navigate("/home", { replace: true });
+        setLoading(false);
+      }, 1000); // Giả lập thời gian load
     }
-  }, [accessToken, navigate]);
+  }, [accessToken, navigate, setLoading]);
 
   return (
     <section style={styles.section}>

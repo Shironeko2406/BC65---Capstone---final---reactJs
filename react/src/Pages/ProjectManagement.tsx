@@ -1,19 +1,35 @@
 import React, { useEffect, useState } from "react";
-import { Table, Button, Tag, Avatar, Tooltip, Dropdown, Select, Menu } from "antd";
+import {
+  Table,
+  Button,
+  Tag,
+  Avatar,
+  Tooltip,
+  Dropdown,
+  Select,
+  Menu,
+} from "antd";
 import { EditOutlined, DeleteOutlined, CloseOutlined } from "@ant-design/icons";
 import { useDispatch, useSelector } from "react-redux";
 import { DispatchType, RootState } from "../Redux/store";
-import { AssignUsersToProjectActionAsync, DeleteProjectActionAsync, GetProjectAllActionAsync, RemoveUserFromProjectActionAsync } from "../Redux/Reducers/ProjectReducer";
+import {
+  AssignUsersToProjectActionAsync,
+  DeleteProjectActionAsync,
+  GetProjectAllActionAsync,
+  RemoveUserFromProjectActionAsync,
+} from "../Redux/Reducers/ProjectReducer";
 import { Creator, Member, Project } from "../Models/ProjectModalType";
 import EditProject from "./Modals/ProjectDrawer/EditProject";
 import { GetProjectCategoryActionAsync } from "../Redux/Reducers/ProjectCategoryReducer";
 import { getUserListApi } from "../Redux/Reducers/UsersReducer";
 import { UserInfo } from "../Models/UserModalType";
 import { NavLink } from "react-router-dom";
+import { useLoading } from "../Contexts/LoadingContext";
 
 const { Option } = Select;
 
 const ProjectManagement = () => {
+  const { setLoading } = useLoading();
   const { projectList } = useSelector(
     (state: RootState) => state.ProjectReducer
   );
@@ -22,13 +38,16 @@ const ProjectManagement = () => {
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [isDrawerVisible, setIsDrawerVisible] = useState(false);
   const [selectedMembers, setSelectedMembers] = useState<number[]>([]);
-  const [visibleMemberDropdown, setVisibleMemberDropdown] = useState<number | null>(null);
+  const [visibleMemberDropdown, setVisibleMemberDropdown] = useState<
+    number | null
+  >(null);
 
   useEffect(() => {
+    setLoading(true);
     dispatch(GetProjectAllActionAsync());
     dispatch(GetProjectCategoryActionAsync());
-    dispatch(getUserListApi());
-  }, []);
+    dispatch(getUserListApi()).finally(() => setLoading(false));
+  }, [dispatch, setLoading]);
 
   const showDrawer = (project: Project) => {
     setSelectedProject(project);
@@ -41,18 +60,25 @@ const ProjectManagement = () => {
   };
 
   const deleteProject = (id: number) => {
-    dispatch(DeleteProjectActionAsync(id));
+    setLoading(true);
+    dispatch(DeleteProjectActionAsync(id)).finally(() => setLoading(false));
   };
 
   const handleAddMembers = (projectId: number) => {
     if (selectedMembers.length > 0) {
-      dispatch(AssignUsersToProjectActionAsync(projectId, selectedMembers));
+      setLoading(true);
+      dispatch(
+        AssignUsersToProjectActionAsync(projectId, selectedMembers)
+      ).finally(() => setLoading(false));
       setSelectedMembers([]);
     }
   };
 
   const handleRemoveMember = (projectId: number, userId: number) => {
-    dispatch(RemoveUserFromProjectActionAsync(projectId, userId));
+    setLoading(true);
+    dispatch(RemoveUserFromProjectActionAsync(projectId, userId)).finally(() =>
+      setLoading(false)
+    );
   };
 
   const renderAddMemberDropdown = (projectId: number, creatorId: number) => (
@@ -129,7 +155,9 @@ const ProjectManagement = () => {
       title: "Project Name",
       dataIndex: "projectName",
       key: "projectName",
-      render: (text: string, record: Project) => <NavLink to={`/home/projectdetail/${record.id}`}>{text}</NavLink>,
+      render: (text: string, record: Project) => (
+        <NavLink to={`/home/projectdetail/${record.id}`}>{text}</NavLink>
+      ),
     },
     {
       title: "Category",
@@ -248,4 +276,3 @@ const ProjectManagement = () => {
 };
 
 export default ProjectManagement;
-
