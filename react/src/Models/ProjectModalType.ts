@@ -154,8 +154,12 @@ export interface Member {
   }
 
   export interface Comment {
-    // Define properties for comments here, if any
-  }
+    id: number;
+    idUser: number;
+    name: string;
+    avatar: string;
+    commentContent: string;
+}
 
   // Định nghĩa kiểu cho ProjectCategory
   export interface ProjectCategory {

@@ -255,7 +255,15 @@ const initialState: ProjectState = {
         alias: "viet",
       },
     ],
-    lstComment: [],
+    lstComment: [
+      {
+        id: 11236,
+        idUser: 6915,
+        name: "Hiếu",
+        avatar: "https://ui-avatars.com/api/?name=Hiếu",
+        commentContent: "comment của híu",
+      },
+    ],
     taskId: 12486,
     taskName: "desgign",
     alias: "desgign",

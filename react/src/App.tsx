@@ -10,7 +10,6 @@ import CreateProject from "./Pages/CreateProject";
 import UserManagement from "./Pages/UserManagement";
 import ProjectDetail from "./Pages/ProjectDetail";
 import Page404 from "./Pages/Page404";
-import UpdateTask from "./Pages/Modals/TaskDrawer/UpdateTask";
 import ProtectedRoute from "./Util/ProtectedRoute";
 
 function App() {
@@ -25,7 +24,6 @@ function App() {
             path="home/*"
             element={<ProtectedRoute element={<TemplateUI />} />}
           >
-            <Route path="up" element={<UpdateTask />} />
             <Route path="project" element={<ProjectManagement />} />
             <Route path="projectdetail/:id" element={<ProjectDetail />} />
             <Route path="create-project" element={<CreateProject />} />

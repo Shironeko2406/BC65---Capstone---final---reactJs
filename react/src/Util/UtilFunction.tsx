@@ -67,7 +67,7 @@ httpClient.interceptors.response.use(
             "Forbidden - you don't have permission to access this resource."
           );
 
-          navigateTo("/");
+          // navigateTo("/");
 
           break;
         case 404:
