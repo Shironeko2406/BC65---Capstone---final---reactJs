@@ -55,7 +55,7 @@ const ProjectManagement = () => {
     dispatch(RemoveUserFromProjectActionAsync(projectId, userId));
   };
 
-  const renderAddMemberDropdown = (projectId: number) => (
+  const renderAddMemberDropdown = (projectId: number, creatorId: number) => (
     <Select
       mode="multiple"
       style={{ width: 250 }}
@@ -90,7 +90,7 @@ const ProjectManagement = () => {
       )}
       className="custom-select"
     >
-      {userList.map((user: UserInfo) => (
+      {userList.filter((user:UserInfo) => user.userId !== creatorId).map((user: UserInfo) => (
         <Option key={user.userId} value={user.userId} label={user.name}>
           <div className="demo-option-label-item">
             <Avatar src={user.avatar} /> {user.name}
@@ -203,7 +203,7 @@ const ProjectManagement = () => {
               </Tooltip>
             )}
             <Dropdown
-              overlay={() => renderAddMemberDropdown(project.id)}
+              overlay={() => renderAddMemberDropdown(project.id, project.creator.id)}
               trigger={["click"]}
               arrow
             >
