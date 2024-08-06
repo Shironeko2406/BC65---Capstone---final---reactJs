@@ -36,6 +36,7 @@ const Register: React.FC = () => {
 
   const onFinishFailed = (errorInfo: any) => {
     message.warning("Please check your registration information again.");
+    console.log(errorInfo)
   };
 
   const styles = {
