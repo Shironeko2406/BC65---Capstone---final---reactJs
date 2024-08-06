@@ -1,32 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import {
-  Card,
-  Col,
-  Row,
-  Typography,
-  Avatar,
-  Divider,
-  Button,
-  Modal,
-  message,
-} from "antd";
+import { Card, Col, Row, Typography, Avatar, Divider, Button, Modal, message } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
-import {
-  DragDropContext,
-  Droppable,
-  Draggable,
-  DropResult,
-  DroppableProvided,
-  DraggableProvided,
-} from "react-beautiful-dnd";
+import { DragDropContext, Droppable, Draggable, DropResult, DroppableProvided, DraggableProvided} from "react-beautiful-dnd";
 import { useDispatch, useSelector } from "react-redux";
 import { DispatchType, RootState } from "../Redux/store";
-import {
-  GetProjectDetailByIdActionAsync,
-  GetTaskDetailByIdActionAsync,
-  UpdateStatusTaskActionAsync,
-} from "../Redux/Reducers/ProjectReducer";
+import { GetProjectDetailByIdActionAsync, GetTaskDetailByIdActionAsync, UpdateStatusTaskActionAsync} from "../Redux/Reducers/ProjectReducer";
 import { Assignee, TaskDetail, TaskStatus } from "../Models/ProjectModalType";
 import { Stage, Task } from "../Models/TaskModalType";
 import { GetTaskTypeActionAsync } from "../Redux/Reducers/TaskTypeReducer";

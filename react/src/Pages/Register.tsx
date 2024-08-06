@@ -1,20 +1,6 @@
 import React from "react";
-import {
-  Button,
-  Form,
-  Grid,
-  Input,
-  Select,
-  theme,
-  Typography,
-  message,
-} from "antd";
-import {
-  LockOutlined,
-  MailOutlined,
-  UserOutlined,
-  PhoneOutlined,
-} from "@ant-design/icons";
+import { Button, Form, Grid, Input, Select, theme, Typography, message } from "antd";
+import { LockOutlined, MailOutlined, UserOutlined, PhoneOutlined } from "@ant-design/icons";
 import { NavLink, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { signupActionApi } from "../Redux/Reducers/UsersReducer";
