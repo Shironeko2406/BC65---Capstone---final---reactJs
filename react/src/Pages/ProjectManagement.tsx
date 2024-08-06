@@ -38,9 +38,8 @@ const ProjectManagement = () => {
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [isDrawerVisible, setIsDrawerVisible] = useState(false);
   const [selectedMembers, setSelectedMembers] = useState<number[]>([]);
-  const [visibleMemberDropdown, setVisibleMemberDropdown] = useState<
-    number | null
-  >(null);
+  // const [visibleMemberDropdown, setVisibleMemberDropdown] = useState<number | null>(null);
+  const [visibleMemberDropdown, setVisibleMemberDropdown] = useState<{ [key: number]: number | null }>({});
 
   useEffect(() => {
     setLoading(true);
@@ -81,7 +80,54 @@ const ProjectManagement = () => {
     );
   };
 
-  const renderAddMemberDropdown = (projectId: number, creatorId: number) => (
+  // const renderAddMemberDropdown = (projectId: number, creatorId: number) => (
+  //   <Select
+  //     mode="multiple"
+  //     style={{ width: 250 }}
+  //     placeholder="Add user"
+  //     value={selectedMembers}
+  //     onChange={(value) => setSelectedMembers(value)}
+  //     onDropdownVisibleChange={(open) => {
+  //       if (!open) {
+  //         setSelectedMembers([]);
+  //       }
+  //     }}
+  //     showSearch
+  //     filterOption={(input, option) => {
+  //       const label = option?.label;
+  //       if (typeof label === "string") {
+  //         return label.toLowerCase().includes(input.toLowerCase());
+  //       }
+  //       return false;
+  //     }}
+  //     dropdownRender={(menu) => (
+  //       <>
+  //         {menu}
+  //         <Button
+  //           type="primary"
+  //           block
+  //           onClick={() => handleAddMembers(projectId)}
+  //           disabled={selectedMembers.length === 0}
+  //         >
+  //           Add Members
+  //         </Button>
+  //       </>
+  //     )}
+  //     className="custom-select"
+  //   >
+  //     {userList.filter((user:UserInfo) => user.userId !== creatorId).map((user: UserInfo) => (
+  //       <Option key={user.userId} value={user.userId} label={user.name}>
+  //         <div className="demo-option-label-item">
+  //           <Avatar src={user.avatar} /> {user.name}
+  //         </div>
+  //       </Option>
+  //     ))}
+  //   </Select>
+  // );
+
+
+
+  const renderAddMemberDropdown = (project: Project) => (
     <Select
       mode="multiple"
       style={{ width: 250 }}
@@ -107,7 +153,7 @@ const ProjectManagement = () => {
           <Button
             type="primary"
             block
-            onClick={() => handleAddMembers(projectId)}
+            onClick={() => handleAddMembers(project.id)}
             disabled={selectedMembers.length === 0}
           >
             Add Members
@@ -116,7 +162,7 @@ const ProjectManagement = () => {
       )}
       className="custom-select"
     >
-      {userList.filter((user:UserInfo) => user.userId !== creatorId).map((user: UserInfo) => (
+      {userList.filter((user: UserInfo) => user.userId !== project.creator.id && !project.members.map(member => member.userId).includes(user.userId)).map((user: UserInfo) => (
         <Option key={user.userId} value={user.userId} label={user.name}>
           <div className="demo-option-label-item">
             <Avatar src={user.avatar} /> {user.name}
@@ -125,6 +171,24 @@ const ProjectManagement = () => {
       ))}
     </Select>
   );
+
+  // const renderMemberDropdown = (project: Project) => (
+  //   <Menu>
+  //     {project.members.map((member: Member) => (
+  //       <Menu.Item key={member.userId}>
+  //         <div style={{ display: "flex", alignItems: "center" }}>
+  //           <Avatar src={member.avatar} size="small" />
+  //           <span style={{ marginLeft: 8, flexGrow: 1 }}>{member.name}</span>
+  //           <Button
+  //             type="text"
+  //             icon={<CloseOutlined />}
+  //             onClick={() => handleRemoveMember(project.id, member.userId)}
+  //           />
+  //         </div>
+  //       </Menu.Item>
+  //     ))}
+  //   </Menu>
+  // );
 
   const renderMemberDropdown = (project: Project) => (
     <Menu>
@@ -143,6 +207,7 @@ const ProjectManagement = () => {
       ))}
     </Menu>
   );
+
 
   const columns = [
     {
@@ -185,9 +250,16 @@ const ProjectManagement = () => {
               <Dropdown
                 key={member.userId}
                 overlay={() => renderMemberDropdown(project)}
-                visible={visibleMemberDropdown === member.userId}
+                // visible={visibleMemberDropdown === member.userId}
+                visible={visibleMemberDropdown[project.id] === member.userId}
+                // onVisibleChange={(visible) => {
+                //   setVisibleMemberDropdown(visible ? member.userId : null);
+                // }}
                 onVisibleChange={(visible) => {
-                  setVisibleMemberDropdown(visible ? member.userId : null);
+                  setVisibleMemberDropdown(prev => ({
+                    ...prev,
+                    [project.id]: visible ? member.userId : null,
+                  }));
                 }}
                 arrow
               >
@@ -231,7 +303,8 @@ const ProjectManagement = () => {
               </Tooltip>
             )}
             <Dropdown
-              overlay={() => renderAddMemberDropdown(project.id, project.creator.id)}
+              // overlay={() => renderAddMemberDropdown(project.id, project.creator.id)}
+              overlay={() => renderAddMemberDropdown(project)}
               trigger={["click"]}
               arrow
             >
