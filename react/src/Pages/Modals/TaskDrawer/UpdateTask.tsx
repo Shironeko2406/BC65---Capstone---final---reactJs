@@ -510,6 +510,7 @@ import * as XLSX from "xlsx";
 import { Document, Packer, Paragraph, TextRun, HeadingLevel } from "docx";
 import { saveAs } from "file-saver";
 import {AddCommentActionAsync, DeleteCommentActionAsync, EditCommentActionAsync} from "../../../Redux/Reducers/CommentReducer";
+import { getDataJSONStorage, USER_LOGIN } from "../../../Util/UtilFunction";
 
 const { Option } = Select;
 const { TextArea } = Input;
@@ -879,12 +880,7 @@ const UpdateTask: React.FC<Props> = ({
               </Form.Item>
               <Form.Item name="comment" label="Comment">
                 <div style={{ display: "flex", alignItems: "center" }}>
-                  {/* <Avatar style={{ backgroundColor: "#87d068" }}>DN</Avatar>
-                  <TextArea
-                    style={{ marginLeft: 8 }}
-                    placeholder="Comment here..."
-                  /> */}
-                  <Avatar style={{ backgroundColor: "#87d068" }} className="me-2">DN</Avatar>
+                  <Avatar className="me-2" src={getDataJSONStorage(USER_LOGIN).avatar} size={40 }></Avatar>
                   <Form.Item
                     noStyle
                   >
