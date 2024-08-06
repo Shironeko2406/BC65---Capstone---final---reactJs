@@ -34,7 +34,8 @@ import { GetStatusActionAsync } from "../Redux/Reducers/StatusReducer";
 import { GetPriorityActionAsync } from "../Redux/Reducers/PriorityReducer";
 import UpdateTask from "./Modals/TaskDrawer/UpdateTask";
 import { getUserListByProjectIdActionAsync } from "../Redux/Reducers/UsersReducer";
-import CreateTask from "./Modals/TaskDrawer/CreateTask"; // Import CreateTask
+import CreateTask from "./Modals/TaskDrawer/CreateTask";
+import { useLoading } from "../Contexts/LoadingContext";
 
 const { Text } = Typography;
 
@@ -100,17 +101,22 @@ const ProjectDetail: React.FC<Props> = (props: Props) => {
   const [selectedTaskId, setSelectedTaskId] = useState<number | null>(null);
   const [drawerVisible, setDrawerVisible] = useState(false); // State for drawer visibility
   const dispatch: DispatchType = useDispatch();
+  const { setLoading } = useLoading();
   const { projectDetailById, projectName } = useSelector(
     (state: RootState) => state.ProjectReducer
   );
 
   useEffect(() => {
-    dispatch(GetProjectDetailByIdActionAsync(Number(id)));
-    dispatch(GetTaskTypeActionAsync());
-    dispatch(GetStatusActionAsync());
-    dispatch(GetPriorityActionAsync());
-    dispatch(getUserListByProjectIdActionAsync(Number(id)));
-  }, [id]);
+    setLoading(true);
+    dispatch(GetProjectDetailByIdActionAsync(Number(id)))
+      .then(() => {
+        dispatch(GetTaskTypeActionAsync());
+        dispatch(GetStatusActionAsync());
+        dispatch(GetPriorityActionAsync());
+        dispatch(getUserListByProjectIdActionAsync(Number(id)));
+      })
+      .finally(() => setLoading(false));
+  }, [id, dispatch, setLoading]);
 
   useEffect(() => {
     if (projectDetailById) {

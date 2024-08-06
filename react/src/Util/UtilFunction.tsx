@@ -5,9 +5,6 @@ import axios, {
   InternalAxiosRequestConfig,
 } from "axios";
 
-export const navigateTo = (path: string) => {
-  window.location.href = path;
-};
 const TOKEN_AUTHOR: string = "accessToken";
 const USER_LOGIN: string = "userLogin";
 const HOST_DOMAIN: string = "https://jiranew.cybersoft.edu.vn";
@@ -57,18 +54,12 @@ httpClient.interceptors.response.use(
           console.error(
             "Unauthorized access - perhaps the user is not logged in or token expired."
           );
-
-          navigateTo("/");
-
           break;
         case 403:
           // Xử lý lỗi 403 Forbidden
           console.error(
             "Forbidden - you don't have permission to access this resource."
           );
-
-          // navigateTo("/");
-
           break;
         case 404:
           // Xử lý lỗi 404 Not Found
