@@ -11,25 +11,39 @@ import UserManagement from "./Pages/UserManagement";
 import ProjectDetail from "./Pages/ProjectDetail";
 import Page404 from "./Pages/Page404";
 import ProtectedRoute from "./Util/ProtectedRoute";
+import { Spin } from "antd";
+import { LoadingProvider, useLoading } from "./Contexts/LoadingContext";
+
+const LoadingOverlay = () => {
+  const { isLoading } = useLoading();
+  return isLoading ? (
+    <div className="loading-overlay">
+      <Spin size="large" />
+    </div>
+  ) : null;
+};
 
 function App() {
   return (
     <BrowserRouter>
       <Provider store={store}>
-        <Routes>
-          <Route path="/" element={<Login />} />
-          <Route path="register" element={<Register />} />
-          <Route path="*" element={<Page404 />} />
-          <Route
-            path="home/*"
-            element={<ProtectedRoute element={<TemplateUI />} />}
-          >
-            <Route path="project" element={<ProjectManagement />} />
-            <Route path="projectdetail/:id" element={<ProjectDetail />} />
-            <Route path="create-project" element={<CreateProject />} />
-            <Route path="" element={<UserManagement />} />
-          </Route>
-        </Routes>
+        <LoadingProvider>
+          <LoadingOverlay />
+          <Routes>
+            <Route path="/" element={<Login />} />
+            <Route path="register" element={<Register />} />
+            <Route path="*" element={<Page404 />} />
+            <Route
+              path="home/*"
+              element={<ProtectedRoute element={<TemplateUI />} />}
+            >
+              <Route path="project" element={<ProjectManagement />} />
+              <Route path="projectdetail/:id" element={<ProjectDetail />} />
+              <Route path="create-project" element={<CreateProject />} />
+              <Route path="" element={<UserManagement />} />
+            </Route>
+          </Routes>
+        </LoadingProvider>
       </Provider>
     </BrowserRouter>
   );

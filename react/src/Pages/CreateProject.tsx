@@ -7,6 +7,8 @@ import { DispatchType, RootState } from "../Redux/store";
 import { useDispatch, useSelector } from "react-redux";
 import { ProjectCategory } from "../Models/ProjectCategoryModalType";
 import { CreateProjectActionAsync } from "../Redux/Reducers/ProjectReducer";
+import { useLoading } from "../Contexts/LoadingContext";
+import { useNavigate } from "react-router-dom";
 
 const { Option } = Select;
 
@@ -15,11 +17,14 @@ const CreateProject = () => {
   const { projectCategory } = useSelector(
     (state: RootState) => state.ProjectCategoryReducer
   );
+  const navigate = useNavigate();
+  const { setLoading } = useLoading();
   console.log(projectCategory);
 
   useEffect(() => {
-    dispatch(GetProjectCategoryActionAsync());
-  }, []);
+    setLoading(true);
+    dispatch(GetProjectCategoryActionAsync()).finally(() => setLoading(false));
+  }, [dispatch, setLoading]);
 
   const [form] = Form.useForm();
   const [description, setDescription] = useState("");
@@ -29,15 +34,22 @@ const CreateProject = () => {
     form.setFieldsValue({ description: content });
   };
 
-  const onFinish = (values: FormCreateProject) => {
-    const formCreate = {
-      ...values,
-      description: description, // Replace the description with the state value
-      alias: "My Project",
-    };
+  const onFinish = async (values: FormCreateProject) => {
+    try {
+      setLoading(true);
+      const formCreate = {
+        ...values,
+        description: description, // Replace the description with the state value
+        alias: "My Project",
+      };
 
-    const actionAsync = CreateProjectActionAsync(formCreate);
-    dispatch(actionAsync);
+      await dispatch(CreateProjectActionAsync(formCreate));
+      navigate("/home/project");
+    } catch (error) {
+      console.error("Failed to create project:", error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (

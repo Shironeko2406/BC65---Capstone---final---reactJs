@@ -1,19 +1,35 @@
 import React, { useEffect, useState } from "react";
-import { Table, Button, Tag, Avatar, Tooltip, Dropdown, Select, Menu } from "antd";
+import {
+  Table,
+  Button,
+  Tag,
+  Avatar,
+  Tooltip,
+  Dropdown,
+  Select,
+  Menu,
+} from "antd";
 import { EditOutlined, DeleteOutlined, CloseOutlined } from "@ant-design/icons";
 import { useDispatch, useSelector } from "react-redux";
 import { DispatchType, RootState } from "../Redux/store";
-import { AssignUsersToProjectActionAsync, DeleteProjectActionAsync, GetProjectAllActionAsync, RemoveUserFromProjectActionAsync } from "../Redux/Reducers/ProjectReducer";
+import {
+  AssignUsersToProjectActionAsync,
+  DeleteProjectActionAsync,
+  GetProjectAllActionAsync,
+  RemoveUserFromProjectActionAsync,
+} from "../Redux/Reducers/ProjectReducer";
 import { Creator, Member, Project } from "../Models/ProjectModalType";
 import EditProject from "./Modals/ProjectDrawer/EditProject";
 import { GetProjectCategoryActionAsync } from "../Redux/Reducers/ProjectCategoryReducer";
 import { getUserListApi } from "../Redux/Reducers/UsersReducer";
 import { UserInfo } from "../Models/UserModalType";
 import { NavLink } from "react-router-dom";
+import { useLoading } from "../Contexts/LoadingContext";
 
 const { Option } = Select;
 
 const ProjectManagement = () => {
+  const { setLoading } = useLoading();
   const { projectList } = useSelector(
     (state: RootState) => state.ProjectReducer
   );
@@ -26,10 +42,11 @@ const ProjectManagement = () => {
   const [visibleMemberDropdown, setVisibleMemberDropdown] = useState<{ [key: number]: number | null }>({});
 
   useEffect(() => {
+    setLoading(true);
     dispatch(GetProjectAllActionAsync());
     dispatch(GetProjectCategoryActionAsync());
-    dispatch(getUserListApi());
-  }, []);
+    dispatch(getUserListApi()).finally(() => setLoading(false));
+  }, [dispatch, setLoading]);
 
   const showDrawer = (project: Project) => {
     setSelectedProject(project);
@@ -42,68 +59,28 @@ const ProjectManagement = () => {
   };
 
   const deleteProject = (id: number) => {
-    dispatch(DeleteProjectActionAsync(id));
+    setLoading(true);
+    dispatch(DeleteProjectActionAsync(id)).finally(() => setLoading(false));
   };
 
   const handleAddMembers = (projectId: number) => {
     if (selectedMembers.length > 0) {
-      dispatch(AssignUsersToProjectActionAsync(projectId, selectedMembers));
+      setLoading(true);
+      dispatch(
+        AssignUsersToProjectActionAsync(projectId, selectedMembers)
+      ).finally(() => setLoading(false));
       setSelectedMembers([]);
     }
   };
 
   const handleRemoveMember = (projectId: number, userId: number) => {
-    dispatch(RemoveUserFromProjectActionAsync(projectId, userId));
+    setLoading(true);
+    dispatch(RemoveUserFromProjectActionAsync(projectId, userId)).finally(() =>
+      setLoading(false)
+    );
   };
 
-  const renderAddMemberDropdown = (projectId: number, creatorId: number) => (
-    <Select
-      mode="multiple"
-      style={{ width: 250 }}
-      placeholder="Add user"
-      value={selectedMembers}
-      onChange={(value) => setSelectedMembers(value)}
-      onDropdownVisibleChange={(open) => {
-        if (!open) {
-          setSelectedMembers([]);
-        }
-      }}
-      showSearch
-      filterOption={(input, option) => {
-        const label = option?.label;
-        if (typeof label === "string") {
-          return label.toLowerCase().includes(input.toLowerCase());
-        }
-        return false;
-      }}
-      dropdownRender={(menu) => (
-        <>
-          {menu}
-          <Button
-            type="primary"
-            block
-            onClick={() => handleAddMembers(projectId)}
-            disabled={selectedMembers.length === 0}
-          >
-            Add Members
-          </Button>
-        </>
-      )}
-      className="custom-select"
-    >
-      {userList.filter((user:UserInfo) => user.userId !== creatorId).map((user: UserInfo) => (
-        <Option key={user.userId} value={user.userId} label={user.name}>
-          <div className="demo-option-label-item">
-            <Avatar src={user.avatar} /> {user.name}
-          </div>
-        </Option>
-      ))}
-    </Select>
-  );
-
-
-
-  // const renderAddMemberDropdown = (project: Project) => (
+  // const renderAddMemberDropdown = (projectId: number, creatorId: number) => (
   //   <Select
   //     mode="multiple"
   //     style={{ width: 250 }}
@@ -129,7 +106,7 @@ const ProjectManagement = () => {
   //         <Button
   //           type="primary"
   //           block
-  //           onClick={() => handleAddMembers(project.id)}
+  //           onClick={() => handleAddMembers(projectId)}
   //           disabled={selectedMembers.length === 0}
   //         >
   //           Add Members
@@ -138,7 +115,7 @@ const ProjectManagement = () => {
   //     )}
   //     className="custom-select"
   //   >
-  //     {userList.filter((user: UserInfo) => user.userId !== project.creator.id && !project.members.map(member => member.userId).includes(user.userId)).map((user: UserInfo) => (
+  //     {userList.filter((user:UserInfo) => user.userId !== creatorId).map((user: UserInfo) => (
   //       <Option key={user.userId} value={user.userId} label={user.name}>
   //         <div className="demo-option-label-item">
   //           <Avatar src={user.avatar} /> {user.name}
@@ -147,6 +124,53 @@ const ProjectManagement = () => {
   //     ))}
   //   </Select>
   // );
+
+
+
+  const renderAddMemberDropdown = (project: Project) => (
+    <Select
+      mode="multiple"
+      style={{ width: 250 }}
+      placeholder="Add user"
+      value={selectedMembers}
+      onChange={(value) => setSelectedMembers(value)}
+      onDropdownVisibleChange={(open) => {
+        if (!open) {
+          setSelectedMembers([]);
+        }
+      }}
+      showSearch
+      filterOption={(input, option) => {
+        const label = option?.label;
+        if (typeof label === "string") {
+          return label.toLowerCase().includes(input.toLowerCase());
+        }
+        return false;
+      }}
+      dropdownRender={(menu) => (
+        <>
+          {menu}
+          <Button
+            type="primary"
+            block
+            onClick={() => handleAddMembers(project.id)}
+            disabled={selectedMembers.length === 0}
+          >
+            Add Members
+          </Button>
+        </>
+      )}
+      className="custom-select"
+    >
+      {userList.filter((user: UserInfo) => user.userId !== project.creator.id && !project.members.map(member => member.userId).includes(user.userId)).map((user: UserInfo) => (
+        <Option key={user.userId} value={user.userId} label={user.name}>
+          <div className="demo-option-label-item">
+            <Avatar src={user.avatar} /> {user.name}
+          </div>
+        </Option>
+      ))}
+    </Select>
+  );
 
   // const renderMemberDropdown = (project: Project) => (
   //   <Menu>
@@ -196,7 +220,9 @@ const ProjectManagement = () => {
       title: "Project Name",
       dataIndex: "projectName",
       key: "projectName",
-      render: (text: string, record: Project) => <NavLink to={`/home/projectdetail/${record.id}`}>{text}</NavLink>,
+      render: (text: string, record: Project) => (
+        <NavLink to={`/home/projectdetail/${record.id}`}>{text}</NavLink>
+      ),
     },
     {
       title: "Category",
@@ -277,8 +303,8 @@ const ProjectManagement = () => {
               </Tooltip>
             )}
             <Dropdown
-              overlay={() => renderAddMemberDropdown(project.id, project.creator.id)}
-              // overlay={() => renderAddMemberDropdown(project)}
+              // overlay={() => renderAddMemberDropdown(project.id, project.creator.id)}
+              overlay={() => renderAddMemberDropdown(project)}
               trigger={["click"]}
               arrow
             >
@@ -323,4 +349,3 @@ const ProjectManagement = () => {
 };
 
 export default ProjectManagement;
-
