@@ -51,13 +51,29 @@ const UserManagement: React.FC = () => {
     setFilteredUsers(filteredData);
   };
 
-  const handleDelete = (id: number) => {
-    dispatch(deleteUserApi(id));
+  const handleDelete = async (id: number) => {
+    try {
+      setLoading(true);
+      await dispatch(deleteUserApi(id));
+      message.success("User deleted successfully!");
+    } catch (error) {
+      message.error("Failed to delete user!");
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleDeleteSelected = () => {
-    dispatch(deleteMultipleUsersApi(selectedRowKeys));
-    setSelectedRowKeys([]); // Clear selected rows
+  const handleDeleteSelected = async () => {
+    try {
+      setLoading(true);
+      await dispatch(deleteMultipleUsersApi(selectedRowKeys));
+      setSelectedRowKeys([]);
+      message.success("Selected users deleted successfully!");
+    } catch (error) {
+      message.error("Failed to delete selected users!");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleEdit = (user: UserInfo) => {
@@ -68,11 +84,14 @@ const UserManagement: React.FC = () => {
 
   const handleUpdate = async (values: UserInfo) => {
     try {
+      setLoading(true);
       await dispatch(editUserApi(values));
       setIsDrawerVisible(false);
-      dispatch(getUserListApi()); // Fetch lại dữ liệu sau khi cập nhật thành công
+      await dispatch(getUserListApi());
     } catch (error) {
       console.error("Failed to update user:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -110,7 +129,7 @@ const UserManagement: React.FC = () => {
             onClick={() => handleEdit(record)}
           />
           <Popconfirm
-            title="Are you want to delete this user?"
+            title="Are you sure you want to delete this user?"
             onConfirm={() => handleDelete(record.userId)}
             okText="Yes"
             cancelText="No"
@@ -147,7 +166,7 @@ const UserManagement: React.FC = () => {
             cancelText="No"
           >
             <Button type="primary" danger>
-              Delete selected user
+              Delete selected users
             </Button>
           </Popconfirm>
         )}

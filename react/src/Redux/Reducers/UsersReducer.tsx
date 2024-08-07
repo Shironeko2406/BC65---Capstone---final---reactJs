@@ -211,7 +211,6 @@ export const deleteMultipleUsersApi = (userIds: number[]) => {
       );
       await Promise.all(promises);
       userIds.forEach((userId) => dispatch(removeUserFromList(userId)));
-      message.success("Successfully deleted the selected user!");
     } catch (error: any) {
       if (error.response) {
         const errorMessage = error.response.data?.message || "Unknown error";
@@ -225,7 +224,7 @@ export const deleteMultipleUsersApi = (userIds: number[]) => {
   };
 };
 
-//-------- E User-----------------
+//-------- Edit User-----------------
 export const editUserApi = (user: UserInfo) => {
   return async (dispatch: DispatchType) => {
     try {

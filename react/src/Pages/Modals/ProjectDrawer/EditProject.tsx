@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react"
+import React, { useEffect, useState } from "react";
 import { Drawer, Form, Input, Select, Button, Row, Col } from "antd";
 import { Editor } from "@tinymce/tinymce-react";
 import { EditProjectProps } from "../../../Models/ProjectModalType";
@@ -6,6 +6,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { DispatchType, RootState } from "../../../Redux/store";
 import { ProjectCategory } from "../../../Models/ProjectCategoryModalType";
 import { UpdateProjectActionAsync } from "../../../Redux/Reducers/ProjectReducer";
+import { useLoading } from "../../../Contexts/LoadingContext";
 
 const { Option } = Select;
 
@@ -20,6 +21,7 @@ const EditProject: React.FC<EditProjectProps> = ({
     (state: RootState) => state.ProjectCategoryReducer
   );
   const dispatch: DispatchType = useDispatch();
+  const { setLoading } = useLoading();
 
   useEffect(() => {
     if (project) {
@@ -36,9 +38,15 @@ const EditProject: React.FC<EditProjectProps> = ({
   const handleOk = () => {
     form
       .validateFields()
-      .then((values) => {
-        const dataUpdate = { ...values, description: editorContent }
-        dispatch(UpdateProjectActionAsync(dataUpdate.id, dataUpdate))
+      .then(async (values) => {
+        setLoading(true);
+        const dataUpdate = { ...values, description: editorContent };
+        try {
+          await dispatch(UpdateProjectActionAsync(dataUpdate.id, dataUpdate));
+        } catch (error) {
+        } finally {
+          setLoading(false);
+        }
         onClose();
       })
       .catch((info) => {
