@@ -1,11 +1,7 @@
 import React, { useEffect } from "react";
 import { Button, Checkbox, Form, Grid, Input, theme, Typography } from "antd";
 import { useDispatch } from "react-redux";
-import {
-  FacebookOutlined,
-  LockOutlined,
-  MailOutlined,
-} from "@ant-design/icons";
+import { FacebookOutlined, LockOutlined, MailOutlined } from "@ant-design/icons";
 import { NavLink, useNavigate } from "react-router-dom";
 import { loginActionApi } from "../Redux/Reducers/UsersReducer";
 import { DispatchType } from "../Redux/store";

@@ -42,6 +42,7 @@ export const EditCommentActionAsync = (
           contentComment
         )}`
       );
+      console.log(res.data.content)
       dispatch(GetTaskDetailByIdActionAsync(taskId));
       message.success("Update success!");
     } catch (error: any) {
@@ -60,6 +61,7 @@ export const AddCommentActionAsync = (
         taskId,
         contentComment,
       });
+      console.log(res.data.content)
       dispatch(GetTaskDetailByIdActionAsync(taskId));
       message.success("Create success!");
     } catch (error: any) {

@@ -1,15 +1,5 @@
 import React, { useState, useEffect } from "react";
-import {
-  Drawer,
-  Form,
-  Input,
-  Select,
-  Slider,
-  Button,
-  Row,
-  Col,
-  InputNumber,
-} from "antd";
+import { Drawer, Form, Input, Select, Slider, Button, Row, Col, InputNumber } from "antd";
 import { Editor } from "@tinymce/tinymce-react";
 import { RootState, DispatchType } from "../../../Redux/store";
 import { useDispatch, useSelector } from "react-redux";
