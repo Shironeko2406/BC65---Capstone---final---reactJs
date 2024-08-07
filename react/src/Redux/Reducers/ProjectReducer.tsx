@@ -330,7 +330,7 @@ export const CreateProjectActionAsync = (projectData: FormCreateProject) => {
         projectData
       );
       console.log(res.data.content);
-      dispatch(GetProjectAllActionAsync());
+      await dispatch(GetProjectAllActionAsync());
       message.success("Create success!");
     } catch (error: any) {
       console.log(error);
@@ -349,7 +349,7 @@ export const UpdateProjectActionAsync = (
         dataUpdate
       );
       console.log(res.data.content);
-      dispatch(GetProjectAllActionAsync());
+      await dispatch(GetProjectAllActionAsync());
       message.success("Update success!");
     } catch (error: any) {
       console.log(error);
@@ -364,7 +364,7 @@ export const DeleteProjectActionAsync = (id: number) => {
         `/api/Project/deleteProject?projectId=${id}`
       );
       console.log(res.data.content);
-      dispatch(GetProjectAllActionAsync());
+      await dispatch(GetProjectAllActionAsync());
       message.success("Delete success!");
     } catch (error: any) {
       console.log(error);
@@ -382,7 +382,7 @@ export const AssignUsersToProjectActionAsync = (
         httpClient.post("/api/Project/assignUserProject", { projectId, userId })
       );
       await Promise.all(promises);
-      dispatch(GetProjectAllActionAsync());
+      await dispatch(GetProjectAllActionAsync());
       message.success("Users assigned successfully!");
     } catch (error: any) {
       message.error("Failed to assign users!");
@@ -401,7 +401,7 @@ export const RemoveUserFromProjectActionAsync = (
         projectId,
         userId,
       });
-      dispatch(GetProjectAllActionAsync());
+      await dispatch(GetProjectAllActionAsync());
       message.success(`${res.data.content}`);
     } catch (error: any) {
       message.error("Failed delete users!");
@@ -432,7 +432,7 @@ export const GetTaskDetailByIdActionAsync = (id: number) => {
         `/api/Project/getTaskDetail?taskId=${id}`
       );
       console.log(res.data.content);
-      dispatch(setTaskDetail(res.data.content));
+      await dispatch(setTaskDetail(res.data.content));
     } catch (error: any) {
       console.log(error);
     }
@@ -447,7 +447,7 @@ export const UpdateTaskActionAsync = (taskDataUpdate: FormTaskUpdate) => {
         taskDataUpdate
       );
       console.log(res.data.content);
-      dispatch(GetProjectDetailByIdActionAsync(taskDataUpdate.projectId));
+      await dispatch(GetProjectDetailByIdActionAsync(taskDataUpdate.projectId));
       message.success("Update success!");
     } catch (error: any) {
       console.log(error);
@@ -460,7 +460,7 @@ export const CreateTaskActionAsync = (data: createTaskForm) => {
     try {
       await httpClient.post("/api/Project/createTask", data);
       message.success("Task created successfully");
-      dispatch(GetProjectDetailByIdActionAsync(data.projectId));
+      await dispatch(GetProjectDetailByIdActionAsync(data.projectId));
     } catch (error: any) {
       console.error("Failed to create task:", error);
       message.error("Failed to create task");
@@ -479,7 +479,7 @@ export const UpdateStatusTaskActionAsync = (
         taskId,
         statusId,
       });
-      dispatch(GetProjectDetailByIdActionAsync(projectId));
+      await dispatch(GetProjectDetailByIdActionAsync(projectId));
       message.success(`${res.data.content}`);
     } catch (error: any) {
       console.log(error);

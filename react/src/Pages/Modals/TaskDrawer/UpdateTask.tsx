@@ -1,7 +1,25 @@
 import React, { useEffect, useState } from "react";
-import { Modal, Form, Input, Select, Button, Slider, InputNumber, Avatar, Row, Col, List, Pagination} from "antd";
+import {
+  Modal,
+  Form,
+  Input,
+  Select,
+  Button,
+  Slider,
+  InputNumber,
+  Avatar,
+  Row,
+  Col,
+  List,
+  Pagination,
+} from "antd";
 import { Comment as AntComment } from "@ant-design/compatible";
-import {DeleteOutlined, FileExcelOutlined, DownloadOutlined, SendOutlined,} from "@ant-design/icons";
+import {
+  DeleteOutlined,
+  FileExcelOutlined,
+  DownloadOutlined,
+  SendOutlined,
+} from "@ant-design/icons";
 import { Editor } from "@tinymce/tinymce-react";
 import { useSelector } from "react-redux";
 import { DispatchType, RootState } from "../../../Redux/store";
@@ -14,8 +32,13 @@ import { Assignee, Comment, Member } from "../../../Models/ProjectModalType";
 import * as XLSX from "xlsx";
 import { Document, Packer, Paragraph, TextRun, HeadingLevel } from "docx";
 import { saveAs } from "file-saver";
-import {AddCommentActionAsync, DeleteCommentActionAsync, EditCommentActionAsync} from "../../../Redux/Reducers/CommentReducer";
+import {
+  AddCommentActionAsync,
+  DeleteCommentActionAsync,
+  EditCommentActionAsync,
+} from "../../../Redux/Reducers/CommentReducer";
 import { getDataJSONStorage, USER_LOGIN } from "../../../Util/UtilFunction";
+import { useLoading } from "../../../Contexts/LoadingContext";
 
 const { Option } = Select;
 const { TextArea } = Input;
@@ -47,6 +70,7 @@ const UpdateTask: React.FC<Props> = ({
   const { userListByProjectId } = useSelector(
     (state: RootState) => state.UsersReducer
   );
+  const { setLoading } = useLoading();
   const [form] = Form.useForm();
   const [assignees, setAssignees] = useState<number[]>([]);
   const [timeTracking, setTimeTracking] = useState({
@@ -57,7 +81,7 @@ const UpdateTask: React.FC<Props> = ({
   const [editingCommentId, setEditingCommentId] = useState<number | null>(null);
   const [editedCommentContent, setEditedCommentContent] = useState<string>("");
   const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize] = useState(2); // Number of comments per page
+  const [pageSize] = useState(2); // Số lượng bình luận trên mỗi trang
   const [newComment, setNewComment] = useState<string>("");
 
   const totalComments = taskDetail?.lstComment.length || 0;
@@ -82,8 +106,6 @@ const UpdateTask: React.FC<Props> = ({
         ),
         priorityId: taskDetail.priorityId,
         originalEstimate: taskDetail.originalEstimate,
-        // timeTrackingSpent: taskDetail.timeTrackingSpent,
-        // timeTrackingRemaining: taskDetail.timeTrackingRemaining,
       });
       setAssignees(
         taskDetail.assigness.map((assignee: Assignee) => assignee.id)
@@ -127,8 +149,9 @@ const UpdateTask: React.FC<Props> = ({
   };
 
   const handleSave = () => {
-    form.validateFields().then((values) => {
+    form.validateFields().then(async (values) => {
       if (taskId !== null) {
+        setLoading(true);
         const dataUpdate = {
           ...values,
           description: editorContent,
@@ -137,7 +160,12 @@ const UpdateTask: React.FC<Props> = ({
           projectId: projectId,
           taskId: taskId.toString(),
         };
-        dispatch(UpdateTaskActionAsync(dataUpdate));
+        try {
+          await dispatch(UpdateTaskActionAsync(dataUpdate));
+        } catch (error) {
+        } finally {
+          setLoading(false);
+        }
         onClose();
       }
     });
@@ -147,7 +175,6 @@ const UpdateTask: React.FC<Props> = ({
   const handleDeleteComment = (idComment: number) => {
     if (taskId !== null) {
       dispatch(DeleteCommentActionAsync(taskId, idComment)).then(() => {
-        //fix lỗi nếu ở trang khác mà xóa hết comment sẽ bị no data
         if (commentsToDisplay.length === 1 && currentPage > 1) {
           setCurrentPage(currentPage - 1);
         }
@@ -156,7 +183,6 @@ const UpdateTask: React.FC<Props> = ({
       console.error("taskId is null");
     }
   };
-
 
   const handleEditComment = (comment: Comment) => {
     setEditingCommentId(comment.id);
@@ -186,7 +212,7 @@ const UpdateTask: React.FC<Props> = ({
   const handleSendComment = () => {
     if (taskId !== null && newComment.trim()) {
       dispatch(AddCommentActionAsync(taskId, newComment));
-      setNewComment(""); // Reset input after sending
+      setNewComment(""); // Reset input sau khi gửi
     } else {
       console.error("Task ID is null or comment is empty.");
     }
@@ -194,7 +220,7 @@ const UpdateTask: React.FC<Props> = ({
 
   const handleEnterPress = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === "Enter") {
-      e.preventDefault(); // Prevents default behavior of creating a new line
+      e.preventDefault(); // Ngăn chặn hành vi mặc định tạo dòng mới
       handleSendComment();
     }
   };
@@ -385,10 +411,12 @@ const UpdateTask: React.FC<Props> = ({
               </Form.Item>
               <Form.Item name="comment" label="Comment">
                 <div style={{ display: "flex", alignItems: "center" }}>
-                  <Avatar className="me-2" src={getDataJSONStorage(USER_LOGIN).avatar} size={40 }></Avatar>
-                  <Form.Item
-                    noStyle
-                  >
+                  <Avatar
+                    className="me-2"
+                    src={getDataJSONStorage(USER_LOGIN).avatar}
+                    size={40}
+                  ></Avatar>
+                  <Form.Item noStyle>
                     <TextArea
                       value={newComment}
                       onChange={(e) => setNewComment(e.target.value)}
@@ -402,8 +430,7 @@ const UpdateTask: React.FC<Props> = ({
                     type="primary"
                     onClick={handleSendComment}
                     icon={<SendOutlined />}
-                  >
-                  </Button>
+                  ></Button>
                 </div>
               </Form.Item>
               <List

@@ -1,5 +1,15 @@
 import React, { useState, useEffect } from "react";
-import { Drawer, Form, Input, Select, Slider, Button, Row, Col, InputNumber } from "antd";
+import {
+  Drawer,
+  Form,
+  Input,
+  Select,
+  Slider,
+  Button,
+  Row,
+  Col,
+  InputNumber,
+} from "antd";
 import { Editor } from "@tinymce/tinymce-react";
 import { RootState, DispatchType } from "../../../Redux/store";
 import { useDispatch, useSelector } from "react-redux";
@@ -14,6 +24,7 @@ import { GetStatusActionAsync } from "../../../Redux/Reducers/StatusReducer";
 import { GetTaskTypeActionAsync } from "../../../Redux/Reducers/TaskTypeReducer";
 import { getUserListByProjectIdActionAsync } from "../../../Redux/Reducers/UsersReducer";
 import { CreateTaskActionAsync } from "../../../Redux/Reducers/ProjectReducer";
+import { useLoading } from "../../../Contexts/LoadingContext";
 
 interface TaskDrawerProps {
   visible: boolean;
@@ -36,6 +47,7 @@ const TaskDrawer: React.FC<TaskDrawerProps> = ({
   const dispatch: DispatchType = useDispatch();
   const params = useParams();
   const { id } = params;
+  const { setLoading } = useLoading();
 
   const { userListByProjectId } = useSelector(
     (state: RootState) => state.UsersReducer
@@ -50,12 +62,15 @@ const TaskDrawer: React.FC<TaskDrawerProps> = ({
 
   useEffect(() => {
     if (visible) {
-      dispatch(GetPriorityActionAsync());
-      dispatch(GetTaskTypeActionAsync());
-      dispatch(GetStatusActionAsync());
-      dispatch(getUserListByProjectIdActionAsync(Number(id)));
+      setLoading(true);
+      Promise.all([
+        dispatch(GetPriorityActionAsync()),
+        dispatch(GetTaskTypeActionAsync()),
+        dispatch(GetStatusActionAsync()),
+        dispatch(getUserListByProjectIdActionAsync(Number(id))),
+      ]).finally(() => setLoading(false));
     }
-  }, [visible, dispatch, id]);
+  }, [visible, dispatch, id, setLoading]);
 
   const handleEditorChange = (content: string) => {
     setEditorContent(content);
@@ -97,7 +112,8 @@ const TaskDrawer: React.FC<TaskDrawerProps> = ({
   const handleSubmit = () => {
     form
       .validateFields()
-      .then((values) => {
+      .then(async (values) => {
+        setLoading(true);
         const data = {
           ...values,
           listUserAsign: values.assignees,
@@ -106,7 +122,13 @@ const TaskDrawer: React.FC<TaskDrawerProps> = ({
           timeTrackingRemaining: timeTracking.timeTrackingRemaining,
           projectId: Number(id),
         };
-        dispatch(CreateTaskActionAsync(data));
+        try {
+          await dispatch(CreateTaskActionAsync(data));
+        } catch (error) {
+          console.log("error", error);
+        } finally {
+          setLoading(false);
+        }
         form.resetFields();
         onClose();
       })

@@ -19,6 +19,7 @@ import {
   TOKEN_AUTHOR,
   USER_LOGIN,
 } from "../../Util/UtilFunction";
+import logo from "../../../public/assets/img/logo/logo.svg";
 
 const { Header, Content, Footer, Sider } = Layout;
 
@@ -109,7 +110,11 @@ const TemplateUI = (props: Props) => {
           className="logo-container"
           style={{ padding: "16px", textAlign: "center" }}
         >
-          <img src="" alt="Logo" style={{ width: "100%", maxWidth: "120px" }} />
+          <img
+            src={logo}
+            alt="Logo"
+            style={{ width: "100%", maxWidth: "120px" }}
+          />
         </div>
         <Menu
           theme="dark"

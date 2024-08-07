@@ -13,7 +13,7 @@ import { GetStatusActionAsync } from "../Redux/Reducers/StatusReducer";
 import { GetPriorityActionAsync } from "../Redux/Reducers/PriorityReducer";
 import UpdateTask from "./Modals/TaskDrawer/UpdateTask";
 import { getUserListByProjectIdActionAsync } from "../Redux/Reducers/UsersReducer";
-import CreateTask from "./Modals/TaskDrawer/CreateTask";
+import CreateTask from "./Modals/TaskDrawer/CreateTask"; // Import CreateTask
 import { useLoading } from "../Contexts/LoadingContext";
 
 const { Text } = Typography;
@@ -80,22 +80,29 @@ const ProjectDetail: React.FC<Props> = (props: Props) => {
   const [selectedTaskId, setSelectedTaskId] = useState<number | null>(null);
   const [drawerVisible, setDrawerVisible] = useState(false); // State for drawer visibility
   const dispatch: DispatchType = useDispatch();
-  const { setLoading } = useLoading();
   const { projectDetailById, projectName } = useSelector(
     (state: RootState) => state.ProjectReducer
   );
+  const { setLoading } = useLoading();
 
   useEffect(() => {
-    setLoading(true);
-    dispatch(GetProjectDetailByIdActionAsync(Number(id)))
-      .then(() => {
-        dispatch(GetTaskTypeActionAsync());
-        dispatch(GetStatusActionAsync());
-        dispatch(GetPriorityActionAsync());
-        dispatch(getUserListByProjectIdActionAsync(Number(id)));
-      })
-      .finally(() => setLoading(false));
-  }, [id, dispatch, setLoading]);
+    const fetchData = async () => {
+      setLoading(true);
+      try {
+        await Promise.all([
+          dispatch(GetProjectDetailByIdActionAsync(Number(id))),
+          dispatch(GetTaskTypeActionAsync()),
+          dispatch(GetStatusActionAsync()),
+          dispatch(GetPriorityActionAsync()),
+          dispatch(getUserListByProjectIdActionAsync(Number(id))),
+        ]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [dispatch, id, setLoading]);
 
   useEffect(() => {
     if (projectDetailById) {
@@ -316,7 +323,7 @@ const ProjectDetail: React.FC<Props> = (props: Props) => {
       <CreateTask
         visible={drawerVisible}
         onClose={closeDrawer}
-        projectName={projectName} // Truyền projectName vào CreateTask
+        projectName={projectName}
       />
     </div>
   );

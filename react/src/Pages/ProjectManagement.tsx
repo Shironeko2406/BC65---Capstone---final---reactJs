@@ -1,9 +1,24 @@
 import React, { useEffect, useState } from "react";
-import { Table, Button, Tag, Avatar, Tooltip, Dropdown, Select, Menu } from "antd";
+import {
+  Table,
+  Button,
+  Tag,
+  Avatar,
+  Tooltip,
+  Dropdown,
+  Select,
+  Menu,
+  Popconfirm,
+} from "antd";
 import { EditOutlined, DeleteOutlined, CloseOutlined } from "@ant-design/icons";
 import { useDispatch, useSelector } from "react-redux";
 import { DispatchType, RootState } from "../Redux/store";
-import { AssignUsersToProjectActionAsync, DeleteProjectActionAsync, GetProjectAllActionAsync, RemoveUserFromProjectActionAsync} from "../Redux/Reducers/ProjectReducer";
+import {
+  AssignUsersToProjectActionAsync,
+  DeleteProjectActionAsync,
+  GetProjectAllActionAsync,
+  RemoveUserFromProjectActionAsync,
+} from "../Redux/Reducers/ProjectReducer";
 import { Creator, Member, Project } from "../Models/ProjectModalType";
 import EditProject from "./Modals/ProjectDrawer/EditProject";
 import { GetProjectCategoryActionAsync } from "../Redux/Reducers/ProjectCategoryReducer";
@@ -29,10 +44,20 @@ const ProjectManagement = () => {
   }>({});
 
   useEffect(() => {
-    setLoading(true);
-    dispatch(GetProjectAllActionAsync());
-    dispatch(GetProjectCategoryActionAsync());
-    dispatch(getUserListApi()).finally(() => setLoading(false));
+    const fetchData = async () => {
+      setLoading(true);
+      try {
+        await Promise.all([
+          dispatch(GetProjectAllActionAsync()),
+          dispatch(GetProjectCategoryActionAsync()),
+          dispatch(getUserListApi()),
+        ]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
   }, [dispatch, setLoading]);
 
   const showDrawer = (project: Project) => {
@@ -45,26 +70,36 @@ const ProjectManagement = () => {
     setSelectedProject(null);
   };
 
-  const deleteProject = (id: number) => {
+  const deleteProject = async (id: number) => {
     setLoading(true);
-    dispatch(DeleteProjectActionAsync(id)).finally(() => setLoading(false));
-  };
-
-  const handleAddMembers = (projectId: number) => {
-    if (selectedMembers.length > 0) {
-      setLoading(true);
-      dispatch(
-        AssignUsersToProjectActionAsync(projectId, selectedMembers)
-      ).finally(() => setLoading(false));
-      setSelectedMembers([]);
+    try {
+      await dispatch(DeleteProjectActionAsync(id));
+    } finally {
+      setLoading(false);
     }
   };
 
-  const handleRemoveMember = (projectId: number, userId: number) => {
+  const handleAddMembers = async (projectId: number) => {
     setLoading(true);
-    dispatch(RemoveUserFromProjectActionAsync(projectId, userId)).finally(() =>
-      setLoading(false)
-    );
+    try {
+      if (selectedMembers.length > 0) {
+        await dispatch(
+          AssignUsersToProjectActionAsync(projectId, selectedMembers)
+        );
+        setSelectedMembers([]);
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleRemoveMember = async (projectId: number, userId: number) => {
+    setLoading(true);
+    try {
+      await dispatch(RemoveUserFromProjectActionAsync(projectId, userId));
+    } finally {
+      setLoading(false);
+    }
   };
 
   const renderAddMemberDropdown = (project: Project) => (
@@ -249,12 +284,14 @@ const ProjectManagement = () => {
             icon={<EditOutlined />}
             onClick={() => showDrawer(record)}
           />
-          <Button
-            danger
-            shape="circle"
-            icon={<DeleteOutlined />}
-            onClick={() => deleteProject(record.id)}
-          />
+          <Popconfirm
+            title="Are you sure you want to delete this project?"
+            onConfirm={() => deleteProject(record.id)}
+            okText="Yes"
+            cancelText="No"
+          >
+            <Button shape="circle" icon={<DeleteOutlined />} danger />
+          </Popconfirm>
         </span>
       ),
     },
