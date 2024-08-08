@@ -486,3 +486,18 @@ export const UpdateStatusTaskActionAsync = (
     }
   };
 };
+
+export const deleteTaskActionAsync = (
+  taskId: number,
+  projectId: number
+) => {
+  return async (dispatch: DispatchType) => {
+    try {
+      const res = await httpClient.delete(`/api/Project/removeTask?taskId=${taskId}`);
+      await dispatch(GetProjectDetailByIdActionAsync(projectId));
+      message.success(`Delete success!!`);
+    } catch (error: any) {
+      console.log(error);
+    }
+  };
+};
