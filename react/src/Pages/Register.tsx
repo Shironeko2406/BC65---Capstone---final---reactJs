@@ -133,13 +133,13 @@ const Register: React.FC = () => {
           </Form.Item>
           <Form.Item
             name="passWord"
-            extra="Mật khẩu tối đa 8 kí tự."
+            extra="Password maximum 8 characters."
             rules={[
               {
                 required: true,
                 message: "Please input your Password!",
               },
-              { max: 8, message: "Mật khẩu quá dài!" },
+              { max: 8, message: "Password is too long!" },
             ]}
           >
             <Input.Password
@@ -155,6 +155,7 @@ const Register: React.FC = () => {
                 required: true,
                 message: "Please input your Name!",
               },
+              { max: 15, message: "Name is too long!" },
             ]}
           >
             <Input prefix={<UserOutlined />} placeholder="Name" />

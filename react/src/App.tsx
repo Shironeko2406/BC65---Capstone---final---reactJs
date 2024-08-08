@@ -9,6 +9,7 @@ import ProjectManagement from "./Pages/ProjectManagement";
 import CreateProject from "./Pages/CreateProject";
 import UserManagement from "./Pages/UserManagement";
 import ProjectDetail from "./Pages/ProjectDetail";
+import UserProfile from "./Pages/UserProfile";
 import Page404 from "./Pages/Page404";
 import ProtectedRoute from "./Util/ProtectedRoute";
 import { Spin } from "antd";
@@ -41,6 +42,7 @@ function App() {
               <Route path="projectdetail/:id" element={<ProjectDetail />} />
               <Route path="create-project" element={<CreateProject />} />
               <Route path="" element={<UserManagement />} />
+              <Route path="profile" element={<UserProfile />} />
             </Route>
           </Routes>
         </LoadingProvider>
