@@ -27,7 +27,10 @@ import { TaskType } from "../../../Models/TaskTypeModalType";
 import { Status } from "../../../Models/StatusModalType";
 import { Priority } from "../../../Models/PriorityModalType";
 import { useDispatch } from "react-redux";
-import { UpdateTaskActionAsync } from "../../../Redux/Reducers/ProjectReducer";
+import {
+  deleteTaskActionAsync,
+  UpdateTaskActionAsync,
+} from "../../../Redux/Reducers/ProjectReducer";
 import { Assignee, Comment, Member } from "../../../Models/ProjectModalType";
 import * as XLSX from "xlsx";
 import { Document, Packer, Paragraph, TextRun, HeadingLevel } from "docx";
@@ -96,19 +99,24 @@ const UpdateTask: React.FC<Props> = ({
 
   useEffect(() => {
     if (taskDetail) {
+      // Lọc các assignees không còn trong userListByProjectId
+      const validAssignees = taskDetail.assigness.filter((assignee: Assignee) =>
+        userListByProjectId.some((user: Member) => user.userId === assignee.id)
+      );
+
       form.setFieldsValue({
         taskName: taskDetail.taskName,
         description: taskDetail.description,
         typeId: taskDetail.typeId,
         statusId: taskDetail.statusId,
-        listUserAsign: taskDetail.assigness.map(
+        listUserAsign: validAssignees.map(
           (assignee: Assignee) => assignee.id
         ),
         priorityId: taskDetail.priorityId,
         originalEstimate: taskDetail.originalEstimate,
       });
       setAssignees(
-        taskDetail.assigness.map((assignee: Assignee) => assignee.id)
+        validAssignees.map((assignee: Assignee) => assignee.id)
       );
       setTimeTracking({
         timeTrackingSpent: taskDetail.timeTrackingSpent,
@@ -162,6 +170,7 @@ const UpdateTask: React.FC<Props> = ({
         };
         try {
           await dispatch(UpdateTaskActionAsync(dataUpdate));
+          console.log(dataUpdate);
         } catch (error) {
         } finally {
           setLoading(false);
@@ -169,6 +178,11 @@ const UpdateTask: React.FC<Props> = ({
         onClose();
       }
     });
+  };
+
+  const handleRemoveTask = () => {
+    dispatch(deleteTaskActionAsync(Number(taskId), projectId));
+    onClose();
   };
 
   //-----------------Comment---------------------------
@@ -379,7 +393,11 @@ const UpdateTask: React.FC<Props> = ({
               >
                 Export Excel
               </Button>
-              <Button icon={<DeleteOutlined />} type="link">
+              <Button
+                icon={<DeleteOutlined />}
+                type="link"
+                onClick={handleRemoveTask}
+              >
                 Delete
               </Button>
             </Col>
