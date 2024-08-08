@@ -1,7 +1,7 @@
 // src/Modals/UserDrawer.tsx
 import React, { useEffect } from "react";
 import { Drawer, Form, Input, Button } from "antd";
-import { UserDrawerProps} from "../../../Models/UserModalType";
+import { UserDrawerProps } from "../../../Models/UserModalType";
 
 const UserDrawer: React.FC<UserDrawerProps> = ({
   visible,
@@ -57,7 +57,13 @@ const UserDrawer: React.FC<UserDrawerProps> = ({
         <Form.Item
           name="name"
           label="Name"
-          rules={[{ required: true, message: "Please enter your name!" }]}
+          rules={[
+            {
+              required: true,
+              message: "Please input your Name!",
+            },
+            { max: 15, message: "Name is too long!" },
+          ]}
         >
           <Input />
         </Form.Item>

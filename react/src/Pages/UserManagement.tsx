@@ -1,9 +1,18 @@
 import React, { useEffect, useState } from "react";
 import { Table, Input, Button, Space, Popconfirm, message } from "antd";
 import type { ColumnsType } from "antd/es/table";
-import { SearchOutlined, EditOutlined, DeleteOutlined } from "@ant-design/icons";
+import {
+  SearchOutlined,
+  EditOutlined,
+  DeleteOutlined,
+} from "@ant-design/icons";
 import { useDispatch, useSelector } from "react-redux";
-import { deleteMultipleUsersApi, deleteUserApi, editUserApi, getUserListApi } from "../Redux/Reducers/UsersReducer";
+import {
+  deleteMultipleUsersApi,
+  deleteUserApi,
+  editUserApi,
+  getUserListApi,
+} from "../Redux/Reducers/UsersReducer";
 import { DispatchType, RootState } from "../Redux/store";
 import "antd/dist/reset.css";
 import UserDrawer from "./Modals/UserDrawer/UserDrawer";

@@ -86,18 +86,10 @@ export const loginActionApi = (email: string, passWord: string) => {
   return async (dispatch: DispatchType) => {
     console.log(email, passWord);
     try {
-      const res = await httpClient.post(
-        "/api/Users/signin",
-        {
-          email,
-          passWord,
-        },
-        {
-          headers: {
-            TokenCybersoft: TOKEN_CYBERSOFT,
-          },
-        }
-      );
+      const res = await httpClient.post("/api/Users/signin", {
+        email,
+        passWord,
+      });
       message.success("Logged in successfully!");
       const loginAct = loginAction(res.data.content);
       dispatch(loginAct);
@@ -228,24 +220,22 @@ export const deleteMultipleUsersApi = (userIds: number[]) => {
 export const editUserApi = (user: UserInfo) => {
   return async (dispatch: DispatchType) => {
     try {
-      const res = await httpClient.put(
-        `/api/Users/editUser`,
-        {
-          id: user.userId,
-          passWord: user.passWord,
-          email: user.email,
-          name: user.name,
-          phoneNumber: user.phoneNumber,
-        },
-        {
-          headers: {
-            TokenCybersoft: TOKEN_CYBERSOFT,
-          },
-        }
-      );
-      console.log("userdata", res.data.content);
-      dispatch(updateUserInList(res.data.content));
+      const res = await httpClient.put(`/api/Users/editUser`, {
+        id: user.userId,
+        passWord: user.passWord,
+        email: user.email,
+        name: user.name,
+        phoneNumber: user.phoneNumber,
+      });
+      console.log("respone", res);
       message.success("User information updated successfully!");
+
+      // Lấy userLogin từ localStorage
+      const userLogin = getDataJSONStorage(USER_LOGIN);
+      // Kiểm tra nếu userId của user được chỉnh sửa giống với userLogin
+      if (userLogin && userLogin.id === user.userId) {
+        await dispatch(loginActionApi(user.email, user.passWord));
+      }
     } catch (error: any) {
       if (error.response) {
         const errorMessage = error.response.data?.message || "Unknown error";
