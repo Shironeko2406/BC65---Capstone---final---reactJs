@@ -6,7 +6,7 @@ import { DragDropContext, Droppable, Draggable, DropResult, DroppableProvided, D
 import { useDispatch, useSelector } from "react-redux";
 import { DispatchType, RootState } from "../Redux/store";
 import { GetProjectDetailByIdActionAsync, GetTaskDetailByIdActionAsync, UpdateStatusTaskActionAsync} from "../Redux/Reducers/ProjectReducer";
-import { Assignee, TaskDetail, TaskStatus } from "../Models/ProjectModalType";
+import { Assignee, Member, TaskDetail, TaskStatus } from "../Models/ProjectModalType";
 import { Stage, Task } from "../Models/TaskModalType";
 import { GetTaskTypeActionAsync } from "../Redux/Reducers/TaskTypeReducer";
 import { GetStatusActionAsync } from "../Redux/Reducers/StatusReducer";
@@ -104,28 +104,59 @@ const ProjectDetail: React.FC<Props> = (props: Props) => {
     fetchData();
   }, [dispatch, id, setLoading]);
 
+  // useEffect(() => {
+  //   if (projectDetailById) {
+  //     // Transform the projectDetailById data into the format expected by stages
+  //     const transformedStages: Stage[] = projectDetailById.lstTask.map(
+  //       (taskStatus: TaskStatus) => ({
+  //         title: taskStatus.statusName,
+  //         tasks: taskStatus.lstTaskDeTail.map((taskDetail: TaskDetail) => ({
+  //           id: taskDetail.taskId,
+  //           taskName: taskDetail.taskName,
+  //           priority: taskDetail.priorityTask.priority,
+  //           assignees: taskDetail.assigness.map((assignee: Assignee) => ({
+  //             id: assignee.id,
+  //             avatar: assignee.avatar,
+  //             name: assignee.name,
+  //             alias: assignee.alias,
+  //           })),
+  //         })),
+  //       })
+  //     );
+  //     setStages(transformedStages);
+  //   }
+  // }, [projectDetailById]);
+
+
   useEffect(() => {
     if (projectDetailById) {
-      // Transform the projectDetailById data into the format expected by stages
-      const transformedStages: Stage[] = projectDetailById.lstTask.map(
+      // Lọc các assignees không còn trong projectDetailById.members
+      const filteredStages: Stage[] = projectDetailById.lstTask.map(
         (taskStatus: TaskStatus) => ({
           title: taskStatus.statusName,
-          tasks: taskStatus.lstTaskDeTail.map((taskDetail: TaskDetail) => ({
-            id: taskDetail.taskId,
-            taskName: taskDetail.taskName,
-            priority: taskDetail.priorityTask.priority,
-            assignees: taskDetail.assigness.map((assignee: Assignee) => ({
-              id: assignee.id,
-              avatar: assignee.avatar,
-              name: assignee.name,
-              alias: assignee.alias,
-            })),
-          })),
+          tasks: taskStatus.lstTaskDeTail.map((taskDetail: TaskDetail) => {
+            const validAssignees = taskDetail.assigness.filter((assignee: Assignee) =>
+              projectDetailById.members.some((member: Member) => member.userId === assignee.id)
+            );
+  
+            return {
+              id: taskDetail.taskId,
+              taskName: taskDetail.taskName,
+              priority: taskDetail.priorityTask.priority,
+              assignees: validAssignees.map((assignee: Assignee) => ({
+                id: assignee.id,
+                avatar: assignee.avatar,
+                name: assignee.name,
+                alias: assignee.alias,
+              })),
+            };
+          }),
         })
       );
-      setStages(transformedStages);
+      setStages(filteredStages);
     }
   }, [projectDetailById]);
+  
 
   const handleTaskClick = (taskId: number) => {
     dispatch(GetTaskDetailByIdActionAsync(taskId));
