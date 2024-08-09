@@ -109,15 +109,11 @@ const UpdateTask: React.FC<Props> = ({
         description: taskDetail.description,
         typeId: taskDetail.typeId,
         statusId: taskDetail.statusId,
-        listUserAsign: validAssignees.map(
-          (assignee: Assignee) => assignee.id
-        ),
+        listUserAsign: validAssignees.map((assignee: Assignee) => assignee.id),
         priorityId: taskDetail.priorityId,
         originalEstimate: taskDetail.originalEstimate,
       });
-      setAssignees(
-        validAssignees.map((assignee: Assignee) => assignee.id)
-      );
+      setAssignees(validAssignees.map((assignee: Assignee) => assignee.id));
       setTimeTracking({
         timeTrackingSpent: taskDetail.timeTrackingSpent,
         timeTrackingRemaining: taskDetail.timeTrackingRemaining,
@@ -180,18 +176,27 @@ const UpdateTask: React.FC<Props> = ({
     });
   };
 
-  const handleRemoveTask = () => {
-    dispatch(deleteTaskActionAsync(Number(taskId), projectId));
-    onClose();
+  const handleRemoveTask = async () => {
+    try {
+      setLoading(true);
+      await dispatch(deleteTaskActionAsync(Number(taskId), projectId));
+      onClose();
+    } catch (error) {
+      console.log("error", error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   //-----------------Comment---------------------------
-  const handleDeleteComment = (idComment: number) => {
+  const handleDeleteComment = async (idComment: number) => {
     if (taskId !== null) {
-      dispatch(DeleteCommentActionAsync(taskId, idComment)).then(() => {
+      setLoading(true);
+      await dispatch(DeleteCommentActionAsync(taskId, idComment)).then(() => {
         if (commentsToDisplay.length === 1 && currentPage > 1) {
           setCurrentPage(currentPage - 1);
         }
+        setLoading(false);
       });
     } else {
       console.error("taskId is null");
@@ -203,12 +208,14 @@ const UpdateTask: React.FC<Props> = ({
     setEditedCommentContent(comment.commentContent);
   };
 
-  const handleSaveComment = () => {
+  const handleSaveComment = async () => {
     if (taskId !== null && editingCommentId !== null) {
-      dispatch(
+      setLoading(true);
+      await dispatch(
         EditCommentActionAsync(taskId, editingCommentId, editedCommentContent)
       );
       setEditingCommentId(null);
+      setLoading(false);
     } else {
       console.error("Task ID or Comment ID is null.");
     }
@@ -223,10 +230,12 @@ const UpdateTask: React.FC<Props> = ({
     setCurrentPage(page);
   };
 
-  const handleSendComment = () => {
+  const handleSendComment = async () => {
     if (taskId !== null && newComment.trim()) {
-      dispatch(AddCommentActionAsync(taskId, newComment));
+      setLoading(true);
+      await dispatch(AddCommentActionAsync(taskId, newComment));
       setNewComment(""); // Reset input sau khi gửi
+      setLoading(false);
     } else {
       console.error("Task ID is null or comment is empty.");
     }

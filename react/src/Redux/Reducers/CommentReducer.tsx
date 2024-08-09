@@ -22,7 +22,7 @@ export const DeleteCommentActionAsync = (taskId: number, commentId: number) => {
       const res = await httpClient.delete(
         `/api/Comment/deleteComment?idComment=${commentId}`
       );
-      dispatch(GetTaskDetailByIdActionAsync(taskId));
+      await dispatch(GetTaskDetailByIdActionAsync(taskId));
       message.success(`${res.data.content}`);
     } catch (error: any) {
       console.log(error);
@@ -42,8 +42,8 @@ export const EditCommentActionAsync = (
           contentComment
         )}`
       );
-      console.log(res.data.content)
-      dispatch(GetTaskDetailByIdActionAsync(taskId));
+      console.log(res.data.content);
+      await dispatch(GetTaskDetailByIdActionAsync(taskId));
       message.success("Update success!");
     } catch (error: any) {
       console.log(error);
@@ -61,8 +61,8 @@ export const AddCommentActionAsync = (
         taskId,
         contentComment,
       });
-      console.log(res.data.content)
-      dispatch(GetTaskDetailByIdActionAsync(taskId));
+      console.log(res.data.content);
+      await dispatch(GetTaskDetailByIdActionAsync(taskId));
       message.success("Create success!");
     } catch (error: any) {
       console.log(error);
