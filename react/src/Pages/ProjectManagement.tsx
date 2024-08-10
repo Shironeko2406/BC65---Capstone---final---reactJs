@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Table,
   Button,
@@ -276,7 +276,7 @@ const ProjectManagement = () => {
     {
       title: "Action",
       key: "action",
-      render: (text: string, record: Project) => (
+      render: (record: Project) => (
         <span>
           <Button
             type="primary"

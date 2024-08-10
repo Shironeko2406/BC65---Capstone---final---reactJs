@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { Card, Col, Row, Typography, Avatar, Divider, Button, Modal, message } from "antd";
+import { Card, Col, Row, Typography, Avatar, Divider, Button} from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 import { DragDropContext, Droppable, Draggable, DropResult, DroppableProvided, DraggableProvided} from "react-beautiful-dnd";
 import { useDispatch, useSelector } from "react-redux";
@@ -20,16 +20,16 @@ const { Text } = Typography;
 
 type Props = {};
 
-const reorder = (
-  list: Task[],
-  startIndex: number,
-  endIndex: number
-): Task[] => {
-  const result = Array.from(list);
-  const [removed] = result.splice(startIndex, 1);
-  result.splice(endIndex, 0, removed);
-  return result;
-};
+// const reorder = (
+//   list: Task[],
+//   startIndex: number,
+//   endIndex: number
+// ): Task[] => {
+//   const result = Array.from(list);
+//   const [removed] = result.splice(startIndex, 1);
+//   result.splice(endIndex, 0, removed);
+//   return result;
+// };
 
 const move = (
   stages: Stage[],
@@ -72,7 +72,7 @@ const move = (
   }
 };
 
-const ProjectDetail: React.FC<Props> = (props: Props) => {
+const ProjectDetail: React.FC<Props> = () => {
   const params = useParams();
   const { id } = params;
   const [stages, setStages] = useState<Stage[]>([]);

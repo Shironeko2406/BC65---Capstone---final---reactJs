@@ -496,6 +496,7 @@ export const deleteTaskActionAsync = (
       const res = await httpClient.delete(`/api/Project/removeTask?taskId=${taskId}`);
       await dispatch(GetProjectDetailByIdActionAsync(projectId));
       message.success(`Delete success!!`);
+      console.log(res.data.content)
     } catch (error: any) {
       console.log(error);
     }
