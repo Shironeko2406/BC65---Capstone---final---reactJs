@@ -283,6 +283,7 @@ const ProjectManagement = () => {
             shape="circle"
             icon={<EditOutlined />}
             onClick={() => showDrawer(record)}
+            className="me-2"
           />
           <Popconfirm
             title="Are you sure you want to delete this project?"

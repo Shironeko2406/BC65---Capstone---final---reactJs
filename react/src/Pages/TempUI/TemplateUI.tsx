@@ -165,13 +165,14 @@ import {
   UserOutlined,
 } from "@ant-design/icons";
 import type { MenuProps } from "antd";
-import { Layout, Menu, theme, Avatar, Dropdown } from "antd";
+import { Layout, Menu, theme, Avatar, Dropdown, Breadcrumb } from "antd";
 import {
   Outlet,
   useLocation,
   useNavigate,
   useParams,
   Link,
+  NavLink,
 } from "react-router-dom";
 import {
   removeDataTextStorage,
@@ -235,6 +236,18 @@ const TemplateUI: React.FC = () => {
       default:
         return "Dashboard";
     }
+  };
+
+    const generateBreadcrumbItems = (path: string) => {
+    const pathNames = path.split("/").filter((i) => i);
+    return pathNames.map((name, index) => {
+      const routeTo = `/${pathNames.slice(0, index + 1).join("/")}`;
+      return (
+        <Breadcrumb.Item key={routeTo}>
+          <NavLink to={routeTo}>{name}</NavLink>
+        </Breadcrumb.Item>
+      );
+    });
   };
 
   const onMenuClick: MenuProps["onClick"] = (e) => {
@@ -316,6 +329,9 @@ const TemplateUI: React.FC = () => {
           )}
         </Header>
         <Content style={{ margin: "0 16px" }}>
+          <Breadcrumb style={{ margin: "16px 0" }}>
+            {generateBreadcrumbItems(location.pathname)}
+          </Breadcrumb>
           <div
             style={{
               padding: 24,
