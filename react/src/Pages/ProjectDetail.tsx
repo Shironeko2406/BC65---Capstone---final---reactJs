@@ -288,7 +288,7 @@ const ProjectDetail: React.FC<Props> = () => {
                                   bodyStyle={{ padding: 0 }}
                                 >
                                   <div style={{ marginBottom: 8 }}>
-                                    <Text strong>{task.id}</Text>
+                                    <Text strong>{task.taskName}</Text>
                                   </div>
                                   <Divider style={{ margin: "8px 0" }} />
                                   <div
