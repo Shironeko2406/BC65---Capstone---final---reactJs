@@ -7,7 +7,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { DispatchType, RootState } from "../Redux/store";
 import { GetProjectDetailByIdActionAsync, GetTaskDetailByIdActionAsync, UpdateStatusTaskActionAsync} from "../Redux/Reducers/ProjectReducer";
 import { Assignee, Member, TaskDetail, TaskStatus } from "../Models/ProjectModalType";
-import { Stage, Task } from "../Models/TaskModalType";
+import { Stage } from "../Models/TaskModalType";
 import { GetTaskTypeActionAsync } from "../Redux/Reducers/TaskTypeReducer";
 import { GetStatusActionAsync } from "../Redux/Reducers/StatusReducer";
 import { GetPriorityActionAsync } from "../Redux/Reducers/PriorityReducer";
