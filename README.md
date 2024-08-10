@@ -60,4 +60,18 @@ Click the image above to watch a full demo of the project on YouTube.
 
 For a detailed breakdown of tasks assigned to team members, please refer to the task file linked below.
 
-[Download Task File](./path/to/task/file.xlsx)
+[Download Task File](finalprojectbc65_task.xlsx)
+
+## Project Members
+
+This project was developed with dedication and collaboration by:
+
+- **Trí Thọ**
+- **Hiếu Nguyễn**
+
+🤝 Contributing
+We welcome contributions from the community. If you want to contribute, please follow these steps:
+1. Fork the repository.
+2. Create a new branch.
+3. Make your changes and commit them.
+4. Push to your fork and submit a pull request.
