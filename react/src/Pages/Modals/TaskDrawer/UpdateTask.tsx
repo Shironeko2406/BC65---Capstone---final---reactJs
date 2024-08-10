@@ -75,7 +75,7 @@ const UpdateTask: React.FC<Props> = ({
   );
   const { setLoading } = useLoading();
   const [form] = Form.useForm();
-  const [assignees, setAssignees] = useState<number[]>([]);
+  // const [assignees, setAssignees] = useState<number[]>([]);
   const [timeTracking, setTimeTracking] = useState({
     timeTrackingSpent: 0,
     timeTrackingRemaining: 0,
@@ -94,9 +94,6 @@ const UpdateTask: React.FC<Props> = ({
       currentPage * pageSize
     ) || [];
 
-  const total =
-    timeTracking.timeTrackingSpent + timeTracking.timeTrackingRemaining;
-
   useEffect(() => {
     if (taskDetail) {
       // Lọc các assignees không còn trong userListByProjectId
@@ -113,7 +110,7 @@ const UpdateTask: React.FC<Props> = ({
         priorityId: taskDetail.priorityId,
         originalEstimate: taskDetail.originalEstimate,
       });
-      setAssignees(validAssignees.map((assignee: Assignee) => assignee.id));
+      // setAssignees(validAssignees.map((assignee: Assignee) => assignee.id));
       setTimeTracking({
         timeTrackingSpent: taskDetail.timeTrackingSpent,
         timeTrackingRemaining: taskDetail.timeTrackingRemaining,
@@ -123,12 +120,8 @@ const UpdateTask: React.FC<Props> = ({
   }, [taskDetail, form]);
 
   const handleAssigneesChange = (value: number[]) => {
-    setAssignees(value);
+    // setAssignees(value);
     form.setFieldsValue({ assignees: value });
-  };
-
-  const handleSliderChange = (value: number) => {
-    setTimeTracking({ ...timeTracking, timeTrackingSpent: value });
   };
 
   const handleTimeSpentChange = (value: number | null) => {
